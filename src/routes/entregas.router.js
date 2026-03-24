@@ -12,11 +12,10 @@ const controller = new EntregasController(service);
 const router = Router();
 
 router.get('/', controller.listarTodos);
-router.post('/',controller.criar);
-router.get('/:id',controller.buscarPorId);
-router.patch('/:id/avancar',controller.avancar);
-router.patch('/:id/cancelar',controller.cancelar);
-// router.get('/:id/historico',);
-//implementar get com filtros
+router.post('/', controller.criar);
+router.get('/:id/historico', controller.obterHistorico);
+router.get('/:id', controller.buscarPorId);
+router.patch('/:id/avancar', controller.avancar);
+router.patch('/:id/cancelar', controller.cancelar);
 
 export default router;

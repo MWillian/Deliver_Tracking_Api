@@ -7,6 +7,23 @@ export class EntregasRepository{
         return this.database.getEntregas();        
     }
 
+    async listarPorStatus(status) {
+        const entregas = this.database.getEntregas();
+        return entregas.filter(e => e.status === status);
+    }
+
+    async verificarDuplicidadeAtiva(descricao, origem, destino) {
+        const entregas = this.database.getEntregas();
+        const statusAtivos = ['CRIADA', 'EM_TRANSITO'];
+        
+        return entregas.some(e => 
+            e.descricao === descricao &&
+            e.origem === origem &&
+            e.destino === destino &&
+            statusAtivos.includes(e.status)
+        );
+    }
+
     async criar(dados){
         const novaEntrega = {
             id: this.database.generateId(),
@@ -24,7 +41,7 @@ export class EntregasRepository{
         return this.database.getEntregas().find((x)=> x.id === id) ?? null;
     }
 
-    async atualizarEntrega(id,dadosAtualizados){
+    async atualizarEntrega(id, dadosAtualizados){
         const index = this.database.entregas.findIndex(e => e.id === id);
         if (index === -1) return null;
         this.database.entregas[index] = {

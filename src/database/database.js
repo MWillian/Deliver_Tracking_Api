@@ -53,28 +53,28 @@ export class Database {
       ]
     },
   ]
-    this.nextId = 1;
+    this.nextId = this._gerarProximoId();
  }
+
+  _gerarProximoId() {
+    if (this.entregas.length === 0) return 1;
+    const maxId = Math.max(...this.entregas.map(e => e.id));
+    return maxId + 1;
+  }
 
   getEntregas() {
     return this.entregas;
   }
 
   generateId() {
-    return this.nextId++;
+    const id = this.nextId;
+    this.nextId++;
+    return id;
   }
 
   setEntregas(dados){
     this.entregas.push(dados);
   }
-
-  // removeEntrega(id){
-  //   const index = this.entregas.findIndex(e => e.id === id);
-  //   if (index === -1) return false;
-
-  //   this.entregas.splice(index, 1);
-  //   return true;
-  // }
     
   atualizarEntrega(id,dadosAtualizados){
     const index = this.entregas.findIndex(e => e.id === id);

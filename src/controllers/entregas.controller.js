@@ -1,44 +1,78 @@
 export class EntregasController{
     constructor(service) {
-    this.service = service; 
-    this.listarTodos = this.listarTodos.bind(this);
-    this.buscarPorId = this.buscarPorId.bind(this);
-    this.criar = this.criar.bind(this);
-    this.atualizarEntrega = this.atualizarEntrega.bind(this);
+        this.service = service; 
+        this.listarTodos = this.listarTodos.bind(this);
+        this.buscarPorId = this.buscarPorId.bind(this);
+        this.criar = this.criar.bind(this);
+        this.avancar = this.avancar.bind(this);
+        this.cancelar = this.cancelar.bind(this);
+        this.obterHistorico = this.obterHistorico.bind(this);
   }
 
   async listarTodos(req, res, next) {
     try {
-      const entregas = await this.service.listarTodos();
+      const { status } = req.query;
+      
+      let entregas;
+      if (status) {
+        entregas = await this.service.listarPorStatus(status);
+      } else {
+        entregas = await this.service.listarTodos();
+      }
       res.json(entregas);
-    } catch (err) { next(err); }
+    } catch (err) { 
+      next(err); 
+    }
   }
 
   async criar(req, res, next) {
     try {
         const novaEntrega = await this.service.criar(req.body);
         res.status(201).json(novaEntrega);
-    } catch (err) { next(err); }
+    } catch (err) { 
+      next(err); 
+    }
   }
 
-  async buscarPorId(req,res,next){
+  async buscarPorId(req, res, next){
     try{
         const entregaEscolhida = await this.service.buscarPorId(Number(req.params.id));
         res.json(entregaEscolhida); 
-    }catch(err){ next(err);}
+    } catch(err){ 
+      next(err);
+    }
   }
 
-  async avancar(req,res,next){
+  async avancar(req, res, next){
     try{
-        await this.service.atualizarEntrega(Number(req.params.id),req.body);
-        res.status(204).json("Status atualizado."); 
-    }catch(err){ next(err);}
+        const entregaAtualizada = await this.service.avancarStatus(Number(req.params.id));
+        res.status(200).json({
+          mensagem: "Status avançado com sucesso",
+          entrega: entregaAtualizada
+        }); 
+    } catch(err){ 
+      next(err);
+    }
   }
 
-  async cancelar(req,res,next){
+  async cancelar(req, res, next){
     try{
-      await this.service.cancelarEntrega(Number(req.params.id));
-      res.status(204).json("Status atualizado."); 
-    }catch(err){ next(err);}
+      const entregaCancelada = await this.service.cancelarEntrega(Number(req.params.id));
+      res.status(200).json({
+        mensagem: "Entrega cancelada com sucesso",
+        entrega: entregaCancelada
+      }); 
+    } catch(err){ 
+      next(err);
+    }
+  }
+
+  async obterHistorico(req, res, next) {
+    try {
+      const historico = await this.service.obterHistorico(Number(req.params.id));
+      res.json(historico);
+    } catch(err) {
+      next(err);
+    }
   }
 }
