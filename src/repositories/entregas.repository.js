@@ -26,7 +26,7 @@ export class EntregasRepository{
 
     async criar(dados){
         const novaEntrega = {
-            id: this.database.generateId(),
+            id: this.database.generateIdEntregas(),
             descricao: dados.descricao,
             origem: dados.origem,
             destino: dados.destino,
@@ -42,13 +42,6 @@ export class EntregasRepository{
     }
 
     async atualizarEntrega(id, dadosAtualizados){
-        const index = this.database.entregas.findIndex(e => e.id === id);
-        if (index === -1) return null;
-        this.database.entregas[index] = {
-            ...this.database.entregas[index],
-            ...dadosAtualizados,
-            id
-        };
-        return this.database.entregas[index];
+        return this.database.atualizar(id, dadosAtualizados);
     }
 }
