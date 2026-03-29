@@ -20,6 +20,10 @@ export class MotoristasRepository{
         return this.database.getMotoristas().find((x) => x.cpf == cpf) ?? null;
     }
 
+    async buscarPorCPF(cpf){
+        return this.buscarPorCpf(cpf);
+    }
+
     async criar(dados){
         const novoMotorista = {
             id: this.database.generateIdMotoristas(),

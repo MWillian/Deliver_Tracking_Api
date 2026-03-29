@@ -1,8 +1,13 @@
 import {AppError} from '../utils/AppError.js'
 
 export class MotoristasService{
-    constructor(repository){
+    /**
+     * @param {import('../repositories/IMotoristas.repository.js').IMotoristasRepository} repository
+     * @param {import('../repositories/IEntregas.repository.js').IEntregasRepository} entregasRepository
+     */
+    constructor(repository,entregasRepository){
         this.repository = repository;
+        this.entregasRepository = entregasRepository;
     }
 
     async listarTodos(){
@@ -14,7 +19,8 @@ export class MotoristasService{
         if (!valoresValidos.includes(status)){
             throw new AppError(`Status inválido: ${status}`, 400);
         }
-        return this.repository.listarPorStatus(status);
+        const motoristas = await this.repository.listarTodos();
+        return motoristas.filter(motorista => motorista.status === status);
     }
 
     async listarPorId(id){
@@ -44,12 +50,36 @@ export class MotoristasService{
         const novoMotorista = await this.repository.criar(dados);
         return novoMotorista;
     }
+
+    async inativar(id){
+        const motorista = await this.listarPorId(id);
+        if (motorista.status != "ATIVO") {
+            throw new AppError(`Só é possível desativar um motorista ativo.`, 422);
+        }
+        motorista.status = "INATIVO";
+        return await this.repository.atualizar(id,motorista);
+    }
     
-    // async listarEntregasPorIdMotorista(id){
-    //     const listasEntregas = await this.repository.ListarEntregasPorId();
-    // }
-
-
+    async listarEntregasPorId(id, filtros){
+        const statusEntregaValidos = ['CRIADA', 'EM_TRANSITO', 'ENTREGUE', 'CANCELADA'];
+        const statusFiltro = filtros?.status ? String(filtros.status).toUpperCase() : null;
+        if (statusFiltro && !statusEntregaValidos.includes(statusFiltro)) {
+            throw new AppError(`Filtro de busca inválido`, 400);
+        }
+        
+        const entregas = await this.entregasRepository.listarTodos();
+        let listaEntregas = [];
+        entregas.forEach(entrega => {
+            const historico = Array.isArray(entrega.historico) ? entrega.historico : [];
+            const temMotorista = historico.some(evento => evento.motoristaId === id);
+            const statusOk = !statusFiltro || entrega.status === statusFiltro;
+            if (temMotorista && statusOk) {
+                listaEntregas.push(entrega);
+            }
+        });
+        return listaEntregas;
+    }
+    
     // MÉTODOS AUXILIARES
     validarCpf(cpf){
         const cleanedCpf = cpf.replace(/\./g, '').replace(/-/g, '');

@@ -1,22 +1,14 @@
-import {Router} from 'express';
-import { EntregasRepository }  from '../repositories/entregas.repository.js';
-import { EntregasService } from '../services/entregas.services.js';
-import { EntregasController }  from '../controllers/entregas.controller.js';
-import { Database } from '../database/database.js';
-
-const database = new Database();
-const repository = new EntregasRepository(database);
-const service = new EntregasService(repository);
-const controller = new EntregasController(service);
-
+import { Router } from 'express';
+import { entregasController } from '../container.js';
+ 
 const router = Router();
 
-router.get('/', controller.listarTodos);
-router.post('/', controller.criar);
-router.get('/:id/historico', controller.obterHistorico);
-router.get('/:id', controller.buscarPorId);
-router.patch('/:id/avancar', controller.avancar);
-router.patch('/:id/cancelar', controller.cancelar);
-
+router.get('/', entregasController.listarTodos);
+router.post('/', entregasController.criar);
+router.get('/:id/historico', entregasController.obterHistorico);
+router.get('/:id', entregasController.buscarPorId);
+router.patch('/:id/avancar', entregasController.avancar);
+router.patch('/:id/cancelar', entregasController.cancelar);
+router.patch('/:id/atribuir', entregasController.atribuirEntrega);
 
 export default router;

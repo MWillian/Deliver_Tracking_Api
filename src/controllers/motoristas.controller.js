@@ -5,6 +5,7 @@ export class MotoristasController{
         this.listarPorId = this.listarPorId.bind(this);
         this.criar = this.criar.bind(this);
         this.listarEntregas = this.listarEntregas.bind(this);
+        this.inativarMotorista = this.inativarMotorista.bind(this);
     }
 
     async listarTodos(req, res, next){
@@ -40,13 +41,26 @@ export class MotoristasController{
         };
     };
 
+    async inativarMotorista(req,res,next){
+        try {
+            const motoristaCancelado = await this.service.inativar(Number(req.params.id));
+            res.status(200).json({
+                mensagem: "Motorista desativado"
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
     async listarEntregas(req,res,next){
         try {
-            const {id} = req.params.id;
-            const entregasDoMotorista = await this.service.listarEntregasPorIdMotorista(Number(id));
+            const filtros = req.query;
+            const id = req.params.id;
+            const entregasDoMotorista = await this.service.listarEntregasPorId(Number(id), filtros);
             res.json(entregasDoMotorista);
         } catch (err) {
             next(err);
         }
     }
+    
 };

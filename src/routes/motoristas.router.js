@@ -1,19 +1,12 @@
-import {Router} from 'express';
-import {MotoristasRepository} from '../repositories/motoristas.repository.js';
-import {MotoristasService} from '../services/motoristas.service.js';
-import { Database } from '../database/database.js';
-import { MotoristasController } from '../controllers/motoristas.controller.js';
+import { Router } from 'express';
+import { motoristasController } from '../container.js';
 
 const router = Router();
 
-const database = new Database();
-const repository = new MotoristasRepository(database);
-const service = new MotoristasService(repository);
-const controller = new MotoristasController(service);
-
-router.get('/', controller.listarTodos);
-router.get('/:id', controller.listarPorId);
-router.post('/',controller.criar);
-router.get('/:id/entregas', controller.listarEntregas)
+router.get('/', motoristasController.listarTodos);
+router.get('/:id', motoristasController.listarPorId);
+router.post('/', motoristasController.criar);
+router.patch('/:id/inativar', motoristasController.inativarMotorista)
+router.get('/:id/entregas', motoristasController.listarEntregas);
 
 export default router;

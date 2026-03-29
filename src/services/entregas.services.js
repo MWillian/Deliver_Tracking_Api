@@ -1,12 +1,17 @@
-import {AppError} from '../utils/AppError.js'
+import { AppError } from '../utils/AppError.js';
 
 export class EntregasService{
-    constructor(repository){
-        this.repository = repository;
+    /**
+     * @param {import('../repositories/IEntregas.repository.js').IEntregasRepository} entregasRepository
+     * @param {import('../repositories/IMotoristas.repository.js').IMotoristasRepository} motoristaRepository
+     */
+    constructor(entregasRepository, motoristaRepository ){
+        this.entregasRepository = entregasRepository;
+        this.motoristaRepository = motoristaRepository;
     }
 
     async listarTodos(){
-        return this.repository.listarTodos();
+        return this.entregasRepository.listarTodos();
     }
 
     async listarPorStatus(status) {
@@ -14,7 +19,7 @@ export class EntregasService{
         if (!valoresValidos.includes(status)) {
             throw new AppError(`Status inválido: ${status}`, 400);
         }
-        return this.repository.listarPorStatus(status);
+        return this.entregasRepository.listarPorStatus(status);
     }
 
     async criar(dados) {
@@ -26,7 +31,7 @@ export class EntregasService{
             throw new AppError('Origem e destino não podem ser iguais', 400);
         }
 
-        const existeDuplicado = await this.repository.verificarDuplicidadeAtiva(
+        const existeDuplicado = await this.entregasRepository.verificarDuplicidadeAtiva(
             dados.descricao,
             dados.origem,
             dados.destino
@@ -51,11 +56,11 @@ export class EntregasService{
             historico: [historicoInicial]
         };
 
-        return this.repository.criar(novaEntrega);
+        return this.entregasRepository.criar(novaEntrega);
     }
 
     async buscarPorId(id){
-        const entrega = await this.repository.buscarPorId(id);
+        const entrega = await this.entregasRepository.buscarPorId(id);
         
         if (!entrega) {
             throw new AppError('Entrega não encontrada', 404);
@@ -65,7 +70,7 @@ export class EntregasService{
     }
 
     async avancarStatus(id) {
-        const entrega = await this.buscarPorId(id);
+        const entrega = await this.entregasRepository.buscarPorId(id);
 
         const transicoes = {
             'CRIADA': 'EM_TRANSITO',
@@ -80,20 +85,20 @@ export class EntregasService{
             throw new AppError(`Não é permitido avançar o status de uma entrega ${entrega.status}`, 400);
         }
 
-        return await this._atualizarStatus(id, proximoStatus, 'Status avançado');
+        return await this.atualizarStatus(id, proximoStatus, 'Status avançado');
     }
 
     async cancelarEntrega(id) {
-        const entrega = await this.buscarPorId(id);
+        const entrega = await this.entregasRepository.buscarPorId(id);
 
         if (entrega.status === 'ENTREGUE' || entrega.status === 'CANCELADA') {
             throw new AppError(`Não é permitido cancelar uma entrega que já foi ${entrega.status}`, 400);
         }
 
-        return await this._atualizarStatus(id, 'CANCELADA', 'Entrega cancelada');
+        return await this.atualizarStatus(id, 'CANCELADA', 'Entrega cancelada');
     }
 
-    async _atualizarStatus(id, novoStatus, descricaoEvento) {
+    async atualizarStatus(id, novoStatus, descricaoEvento) {
         const agora = new Date();
         const dataFormatada = `${agora.getDate()}/${agora.getMonth() + 1}/${agora.getFullYear()}`;
         
@@ -102,17 +107,64 @@ export class EntregasService{
             descricao: novoStatus
         };
 
-        const entrega = await this.repository.buscarPorId(id);
+        const entrega = await this.entregasRepository.buscarPorId(id);
         const historicoAtualizado = [...entrega.historico, novoEvento];
 
-        return await this.repository.atualizarEntrega(id, {
+        return await this.entregasRepository.atualizar(id, {
             status: novoStatus,
             historico: historicoAtualizado
         });
     }
 
     async obterHistorico(id) {
-        const entrega = await this.buscarPorId(id);
+        const entrega = await this.entregasRepository.buscarPorId(id);
         return entrega.historico;
     }
+
+    async atribuirEntrega(motoristaId,idEntrega){
+        const entrega = await this.entregasRepository.buscarPorId(idEntrega);
+        if (!entrega) {
+            throw new AppError('Entrega não encontrada.',404);
+        }
+
+        const motorista = await this.motoristaRepository.buscarPorId(motoristaId);
+
+        if (!motorista) {
+            throw new AppError('Motorista não encontrado.',404);
+        }
+        
+        if (entrega.status != "CRIADA") {
+            throw new AppError('Só é possível atribuir um motorista para uma entrega recém criada.',422);
+        }
+
+        if (motorista.status != "ATIVO") {
+            throw new AppError('Motorista inativo.',422);
+        }
+
+        const historico = Array.isArray(entrega.historico) ? entrega.historico : [];
+        const jaAtribuida = historico.some(evento => evento.motoristaId != null);
+        if (!jaAtribuida) {
+            const agora = new Date();
+            const dataFormatada = `${agora.getDate()}/${agora.getMonth() + 1}/${agora.getFullYear()}`;
+            entrega.historico.push({
+                data: dataFormatada,
+                motoristaId: motorista.id,
+                descricao: `Atribuição de primeiro motorista: ${motorista.nome}.`
+            });
+            const entregaAtribuida = await this.entregasRepository.atualizar(idEntrega, entrega);
+            return entregaAtribuida;
+        }else{
+            const agora = new Date();
+            const dataFormatada = `${agora.getDate()}/${agora.getMonth() + 1}/${agora.getFullYear()}`;
+            entrega.historico.push({
+                motoristaId: motorista.id,
+                data: dataFormatada,
+                descricao: `Substituição de primeiro motorista: ${motorista.nome}.`
+            });
+            const entregaAtribuida = await this.entregasRepository.atualizar(idEntrega, entrega);
+            return entregaAtribuida;
+        }
+    }
+
+
 }

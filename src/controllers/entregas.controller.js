@@ -7,6 +7,7 @@ export class EntregasController{
         this.avancar = this.avancar.bind(this);
         this.cancelar = this.cancelar.bind(this);
         this.obterHistorico = this.obterHistorico.bind(this);
+        this.atribuirEntrega =  this.atribuirEntrega.bind(this);
   }
 
   async listarTodos(req, res, next) {
@@ -72,6 +73,19 @@ export class EntregasController{
       const historico = await this.service.obterHistorico(Number(req.params.id));
       res.json(historico);
     } catch(err) {
+      next(err);
+    }
+  }
+
+  async atribuirEntrega(req,res,next){
+    try {
+      const {motoristaId} = req.body;
+      const idEntrega = Number(req.params.id);
+      const entregaAtribuida = await this.service.atribuirEntrega(motoristaId,idEntrega);
+       res.status(200).json({
+        mensagem: "Entrega atribuida com sucesso ao motorista."
+      }); 
+    } catch (err) {
       next(err);
     }
   }

@@ -31,7 +31,7 @@ export class EntregasRepository{
             origem: dados.origem,
             destino: dados.destino,
             status: dados.status,
-            historico: dados.historico        
+            historico: dados.historico
         };
         this.database.setEntregas(novaEntrega);
         return novaEntrega;
@@ -43,5 +43,9 @@ export class EntregasRepository{
 
     async atualizarEntrega(id, dadosAtualizados){
         return this.database.atualizar(id, dadosAtualizados);
+    }
+
+    async atualizar(id, dadosAtualizados){
+        return this.atualizarEntrega(id, dadosAtualizados);
     }
 }
