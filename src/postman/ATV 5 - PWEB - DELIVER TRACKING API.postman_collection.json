@@ -1,0 +1,292 @@
+{
+  "info": {
+    "_postman_id": "bb2db345-f0d6-4c88-890f-c45e0ec5b429",
+    "name": "ATV 5 - PWEB - DELIVER TRACKING API",
+    "description": "### Welcome to Postman! This is your first collection.\n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests  \n• Test your API in real-world scenarios  \n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52212952",
+    "_collection_link": "https://go.postman.co/collection/52212952-bb2db345-f0d6-4c88-890f-c45e0ec5b429?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Entregas",
+      "item": [
+        {
+          "name": "Buscar histórico de entregas por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/entregas/1/historico",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas",
+                "1",
+                "historico"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar todas as entregas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/entregas",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar entrega por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/entregas/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Criar entrega",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": " {\r\n    \"descricao\": \"Entrega de milho\",\r\n    \"origem\": \"Arapicara\",\r\n    \"destino\": \"Maceió\",\r\n    \"status\": \"CRIADA\",\r\n    \"historico\": [\r\n        {\r\n            \"data\": \"19/03/2026\",\r\n            \"descricao\": \"CRIADA\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/entregas",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Avançar Entrega",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/entregas/1/avancar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas",
+                "1",
+                "avancar"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar entregas por motorista.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/motoristas/1/entregas",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "motoristas",
+                "1",
+                "entregas"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Motoristas",
+      "item": [
+        {
+          "name": "Buscar todos os motoristas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/motoristas",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "motoristas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar motoristas pelo id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/motoristas/3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "motoristas",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Criar motorista.",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": " {\r\n    \"nome\": \"Matheus\",\r\n    \"cpf\": \"125.493.834-40\",\r\n    \"placaVeiculo\" : \"AAA-2223\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/motoristas/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "motoristas",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atribuir motorista para entrega.",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"motoristaId\": \"1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/entregas/1/atribuir",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas",
+                "1",
+                "atribuir"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Inativar motorista.",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": " {\r\n    \"nome\": \"Matheus Willian\",\r\n    \"cpf\": \"125.493.834-66\",\r\n    \"placaVeiculo\" : \"AAA-2223\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/motoristas/1/inativar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "motoristas",
+                "1",
+                "inativar"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
