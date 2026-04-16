@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS motoristas(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    placa_veiculo VARCHAR(20) NOT NULL,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    status VARCHAR(10) NOT NULL CHECK (status IN ('ATIVO', 'INATIVO'))
+);
+
