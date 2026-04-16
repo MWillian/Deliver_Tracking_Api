@@ -6,7 +6,9 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 
 - **Node.js + Express**
     
-- **Arquitetura:** Controller -> Service -> Repository (In-Memory)
+- **Banco de dados:** PostgreSQL com SQL puro (pg)
+    
+- **Arquitetura:** Controller -> Service -> Repository
     
 - **Design:** Inversão de Dependência (Dependency Injection) via interfaces/contratos.
     
@@ -18,15 +20,40 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
     ```
     npm install
     ```
+
+2. Configure o banco de dados:
+
+  - Defina a variável `DATABASE_URL` no arquivo .env
+  - Exemplo: `DATABASE_URL=postgres://usuario:senha@localhost:5432/deliver_tracking`
+
+3. Crie as tabelas (migration SQL):
+
+  ```
+  node run-migrations.js
+  ```
     
-2. Inicie o servidor:
+4. Inicie o servidor:
     
     ```
     npm start
     ```
+
+## Dependências Necessárias
+
+- `express`
+- `pg`
+- `dotenv`
+
+## Mudanças Realizadas nas rotas na etapa atual (ATV 7)
+
+- Relatórios agregados por status de entrega.
+- Relatório de motoristas com entregas em aberto.
+- Novas rotas em [src/routes/relatorios.router.js](src/routes/relatorios.router.js) e integração no roteador principal.
     
     
 ##  Documentação da API
+
+**Base URL:** `/api`
 
 ###  Motoristas 
 
@@ -154,6 +181,30 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
       { "data": "30/3/2026", "descricacao": "CRIADA" }
     ]
     ```
+
+### Relatórios
+
+#### Entregas por Status
+
+- **URL:** `/relatorios/entregas-por-status` | **Método:** `GET`
+
+- **Exemplo de Retorno:**
+
+    ```
+    { "CRIADA": 5, "EM_TRANSITO": 3, "ENTREGUE": 12, "CANCELADA": 2 }
+    ```
+
+#### Motoristas Ativos (entregas em aberto)
+
+- **URL:** `/relatorios/motoristas-ativos` | **Método:** `GET`
+
+- **Exemplo de Retorno:**
+
+    ```
+    [
+      { "motoristaId": 1, "nome": "Willian", "entregasEmAberto": 2 }
+    ]
+    ```
     
 
 ## Regras de Negócio e Validações (Status HTTP)
@@ -174,9 +225,11 @@ A aplicação segue o princípio da **Inversão de Dependência**, onde os servi
      ▼
 [ EntregasRepository ] <----- Contrato: IEntregasRepository
 [ MotoristasRepository ] <--- Contrato: IMotoristasRepository
+[ RelatoriosRepository ] <--- RelatoriosRepository
      ▼
 [ EntregasService ] <------- Recebe Repositories via Constructor
 [ MotoristasService ] <----- Recebe Repository via Constructor
+[ RelatoriosService ] <----- Recebe Repository via Constructor
      ▼
 [ Controllers ] <----------- Orquestram os inputs/outputs
 ```
