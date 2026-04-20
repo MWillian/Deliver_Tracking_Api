@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Entregas{
+  id Int @id @default(autoincrement())
+  descricao String @db.VarChar(255)
+  origem String @db.VarChar(120)
+  destino String @db.VarChar(120)
+  status String @db.VarChar(15)
+
+  eventos Eventos_Entrega[]
+
+  @@map("entregas")
+}
+
+model Motoristas{
+  id Int @id @default(autoincrement())
+  nome String @db.VarChar(100)
+  placa_veiculo String @db.VarChar(20)
+  cpf String @unique @db.VarChar(11)
+  status String @db.VarChar(10)
+
+  eventos Eventos_Entrega[]
+  
+  @@map("motoristas")
+}
+
+model Eventos_Entrega{
+  id Int @id @default(autoincrement())
+  entrega_id Int @map("entrega_id")
+  data_evento String @db.VarChar(20)
+  descricao String @db.VarChar(255)
+  motorista_id Int? @map("motorista_id")
+
+  entrega Entregas @relation(fields: [entrega_id], references: [id], onDelete: Cascade)
+  motorista Motoristas? @relation(fields: [motorista_id], references: [id])
+
+  @@map("eventos_entrega")
+}

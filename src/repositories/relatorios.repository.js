@@ -16,13 +16,13 @@ export class RelatoriosRepository {
         m.id AS "motoristaId",
         m.nome,
         COUNT(DISTINCT e.id)::int AS "entregasEmAberto"
-       FROM motoristas m
-       JOIN eventos_entrega ev ON ev.motorista_id = m.id
-       JOIN entregas e ON e.id = ev.entrega_id
-       WHERE e.status NOT IN ('ENTREGUE', 'CANCELADA')
-       GROUP BY m.id, m.nome
-       HAVING COUNT(DISTINCT e.id) > 0
-       ORDER BY m.id`
+        FROM motoristas m
+        JOIN eventos_entrega ev ON ev.motorista_id = m.id
+        JOIN entregas e ON e.id = ev.entrega_id
+        WHERE e.status NOT IN ('ENTREGUE', 'CANCELADA')
+        GROUP BY m.id, m.nome
+        HAVING COUNT(DISTINCT e.id) > 0
+        ORDER BY m.id`
     );
     return rows;
   }
