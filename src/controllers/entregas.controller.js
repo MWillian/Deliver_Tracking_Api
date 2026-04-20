@@ -14,7 +14,7 @@ export class EntregasController{
 
   async listarTodos(req, res, next) {
     try {
-      const { status, createdDe, createdAte } = req.query;
+      const { status, createdDe, createdAte, page, limit } = req.query;
       
       let entregas;
       if (status) {
@@ -48,7 +48,29 @@ export class EntregasController{
           return true;
         });
       }
-      res.json(entregas);
+      const pageNumber = page ? Number(page) : 1;
+      const limitNumber = limit ? Number(limit) : 10;
+
+      if (!Number.isInteger(pageNumber) || pageNumber < 1) {
+        throw new AppError('page deve ser um inteiro maior ou igual a 1.', 400);
+      }
+
+      if (!Number.isInteger(limitNumber) || limitNumber < 1 || limitNumber > 50) {
+        throw new AppError('limit deve ser um inteiro entre 1 e 50.', 400);
+      }
+
+      const total = entregas.length;
+      const totalPages = Math.max(1, Math.ceil(total / limitNumber));
+      const startIndex = (pageNumber - 1) * limitNumber;
+      const data = entregas.slice(startIndex, startIndex + limitNumber);
+
+      res.json({
+        data,
+        total,
+        page: pageNumber,
+        limit: limitNumber,
+        totalPages
+      });
     } catch (err) { 
       next(err); 
     }
