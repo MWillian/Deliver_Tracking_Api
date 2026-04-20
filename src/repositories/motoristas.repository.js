@@ -1,5 +1,15 @@
-import { pool } from '../config/database.js';
 import { AppError } from '../utils/AppError.js';
+import { prisma } from '../config/database.js';
+
+const mapMotorista = motorista => ({
+    id: motorista.id,
+    nome: motorista.nome,
+    placaVeiculo: motorista.placaVeiculo,
+    cpf: motorista.cpf,
+    status: motorista.status,
+    createdAt: motorista.createdAt,
+    updatedAt: motorista.updatedAt
+});
 
 export class MotoristasRepository{
     constructor(database){
@@ -7,84 +17,47 @@ export class MotoristasRepository{
     }
 
     async listarTodos(){
-        const { rows } = await pool.query(
-            `SELECT 
-                id,
-                nome,
-                placa_veiculo AS "placaVeiculo",
-                cpf,
-                status,
-                created_at AS "createdAt",
-                updated_at AS "updatedAt"
-             FROM motoristas
-             ORDER BY id`
-        );
-        return rows;
+        const motoristas = await prisma.motorista.findMany({
+            orderBy: { id: 'asc' }
+        });
+        return motoristas.map(mapMotorista);
     }
 
     async listarPorStatus(status){
-        const { rows } = await pool.query(
-            `SELECT 
-                id,
-                nome,
-                placa_veiculo AS "placaVeiculo",
-                cpf,
-                status,
-                created_at AS "createdAt",
-                updated_at AS "updatedAt"
-             FROM motoristas
-             WHERE status = $1
-             ORDER BY id`,
-            [status]
-        );
-        return rows;
+        const motoristas = await prisma.motorista.findMany({
+            where: { status },
+            orderBy: { id: 'asc' }
+        });
+        return motoristas.map(mapMotorista);
     }
     
     async buscarPorId(id){
-        const { rows } = await pool.query(
-            `SELECT 
-                id,
-                nome,
-                placa_veiculo AS "placaVeiculo",
-                cpf,
-                status,
-                created_at AS "createdAt",
-                updated_at AS "updatedAt"
-             FROM motoristas
-             WHERE id = $1`,
-            [id]
-        );
-        return rows[0] ?? null;
+        const motorista = await prisma.motorista.findUnique({
+            where: { id }
+        });
+        return motorista ? mapMotorista(motorista) : null;
     }
 
     async buscarPorCpf(cpf){
-        const { rows } = await pool.query(
-            `SELECT 
-                id,
-                nome,
-                placa_veiculo AS "placaVeiculo",
-                cpf,
-                status,
-                created_at AS "createdAt",
-                updated_at AS "updatedAt"
-             FROM motoristas
-             WHERE cpf = $1`,
-            [cpf]
-        );
-        return rows[0] ?? null;
+        const motorista = await prisma.motorista.findUnique({
+            where: { cpf }
+        });
+        return motorista ? mapMotorista(motorista) : null;
     }
 
     async criar(dados){
         try {
-            const { rows } = await pool.query(
-                `INSERT INTO motoristas (nome, placa_veiculo, cpf, status)
-                 VALUES ($1, $2, $3, $4)
-                 RETURNING id, nome, placa_veiculo AS "placaVeiculo", cpf, status`,
-                [dados.nome, dados.placaVeiculo, dados.cpf, 'ATIVO']
-            );
-            return rows[0];
+            const motorista = await prisma.motorista.create({
+                data: {
+                    nome: dados.nome,
+                    placa_veiculo: dados.placaVeiculo,
+                    cpf: dados.cpf,
+                    status: 'ATIVO'
+                }
+            });
+            return mapMotorista(motorista);
         } catch (error) {
-            if (error?.code === '23505') {
+            if (error?.code === 'P2002') {
                 throw new AppError('Cpf já cadastrado.', 409);
             }
             throw error;
@@ -93,16 +66,21 @@ export class MotoristasRepository{
 
     async atualizar(id, dados){
         try {
-            const { rows } = await pool.query(
-                `UPDATE motoristas 
-                 SET nome = $1, placa_veiculo = $2, cpf = $3, status = $4, updated_at = NOW()
-                 WHERE id = $5
-                 RETURNING id, nome, placa_veiculo AS "placaVeiculo", cpf, status`,
-                [dados.nome, dados.placaVeiculo, dados.cpf, dados.status, id]
-            );
-            return rows[0] ?? null;
+            const motorista = await prisma.motorista.update({
+                where: { id },
+                data: {
+                    nome: dados.nome,
+                    placaVeiculo: dados.placaVeiculo,
+                    cpf: dados.cpf,
+                    status: dados.status
+                }
+            });
+            return mapMotorista(motorista);
         } catch (error) {
-            if (error?.code === '23505') {
+            if (error?.code === 'P2025') {
+                return null;
+            }
+            if (error?.code === 'P2002') {
                 throw new AppError('Cpf já cadastrado.', 409);
             }
             throw error;
