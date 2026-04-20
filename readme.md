@@ -1,4 +1,4 @@
-# Deliver Tracking API - Atividade 06
+# Deliver Tracking API
 
 Esta API foi desenvolvida para a gestão logística de entregas e motoristas, aplicando padrões de arquitetura avançados como **Repository Pattern** e **Inversão de Dependência**.
 
@@ -6,7 +6,7 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 
 - **Node.js + Express**
     
-- **Banco de dados:** PostgreSQL com SQL puro (pg)
+- **Banco de dados:** PostgreSQL com Prisma ORM
     
 - **Arquitetura:** Controller -> Service -> Repository
     
@@ -24,15 +24,21 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 2. Configure o banco de dados:
 
   - Defina a variável `DATABASE_URL` no arquivo .env
-  - Exemplo: `DATABASE_URL=postgres://usuario:senha@localhost:5432/deliver_tracking`
+  - Exemplo: `DATABASE_URL=postgresql://usuario:senha@localhost:5432/deliver_tracking`
 
-3. Crie as tabelas (migration SQL):
+3. Execute as migrations:
 
   ```
-  node run-migrations.js
+  npx prisma migrate dev
+  ```
+
+4. (Opcional) Popular dados de demonstração:
+
+  ```
+  node prisma/seed.js
   ```
     
-4. Inicie o servidor:
+5. Inicie o servidor:
     
     ```
     npm start
@@ -41,8 +47,9 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 ## Dependências Necessárias
 
 - `express`
-- `pg`
 - `dotenv`
+- `@prisma/client`
+- `prisma`
 
 ## Mudanças Realizadas nas rotas na etapa atual (ATV 7)
 
@@ -81,6 +88,7 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 #### Listar Todos os Motoristas
 
 - **URL:** `/motoristas` | **Método:** `GET`
+- **Query params (opcional):** `status=ATIVO|INATIVO`
     
 - **Exemplo de Retorno:** `[ { "id": 1, ... }, { "id": 2, ... } ]`
     
@@ -112,6 +120,7 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 #### Listar Entregas por Motorista
 
 - **URL:** `/motoristas/:id/entregas` | **Método:** `GET`
+- **Query params (opcional):** `status=CRIADA|EM_TRANSITO|ENTREGUE|CANCELADA`
     
 - **Exemplo de Retorno (com status=CRIADA):**
     
@@ -171,6 +180,30 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
     
 
 #### Histórico de Eventos
+#### Listar Entregas (com filtros e paginação)
+
+- **URL:** `/entregas` | **Método:** `GET`
+- **Query params (opcional):**
+  - `status=CRIADA|EM_TRANSITO|ENTREGUE|CANCELADA`
+  - `createdDe=YYYY-MM-DD`
+  - `createdAte=YYYY-MM-DD`
+  - `page` (padrão 1)
+  - `limit` (padrão 10, máximo 50)
+
+- **Exemplo:** `/entregas?status=EM_TRANSITO&page=2&limit=5`
+
+- **Exemplo de Retorno:**
+
+    ```
+    {
+      "data": [ ... ],
+      "total": 10,
+      "page": 2,
+      "limit": 5,
+      "totalPages": 2
+    }
+    ```
+
 
 - **URL:** `/entregas/:id/historico` | **Método:** `GET`
     

@@ -17,7 +17,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/entregas/1/historico",
+              "raw": "http://localhost:3000/api/entregas/2/historico",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -26,7 +26,7 @@
               "path": [
                 "api",
                 "entregas",
-                "1",
+                "2",
                 "historico"
               ]
             }
@@ -87,7 +87,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": " {\r\n    \"descricao\": \"Entrega de milho\",\r\n    \"origem\": \"Arapicara\",\r\n    \"destino\": \"Maceió\",\r\n    \"status\": \"CRIADA\",\r\n    \"historico\": [\r\n        {\r\n            \"data\": \"19/03/2026\",\r\n            \"descricao\": \"CRIADA\"\r\n        }\r\n    ]\r\n}",
+              "raw": " {\r\n    \"descricao\": \"Entrega de milho\",\r\n    \"origem\": \"Arapiraca\",\r\n    \"destino\": \"Maceió\",\r\n    \"status\": \"CRIADA\",\r\n    \"historico\": [\r\n        {\r\n            \"data\": \"19/03/2026\",\r\n            \"descricao\": \"CRIADA\"\r\n        }\r\n    ]\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -137,7 +137,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/motoristas/1/entregas",
+              "raw": "http://localhost:3000/api/motoristas/2/entregas?status=CRIADA",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -146,8 +146,70 @@
               "path": [
                 "api",
                 "motoristas",
-                "1",
+                "2",
                 "entregas"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "CRIADA"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar entregas com filtros por data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/entregas?createdDe=2026-1-20",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas"
+              ],
+              "query": [
+                {
+                  "key": "createdDe",
+                  "value": "2026-1-20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar entregas com filtros por paginação",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/entregas?page=1&limit=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "entregas"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
               ]
             }
           },
@@ -184,7 +246,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/motoristas/3",
+              "raw": "http://localhost:3000/api/motoristas/1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -193,7 +255,7 @@
               "path": [
                 "api",
                 "motoristas",
-                "3"
+                "1"
               ]
             }
           },
@@ -206,7 +268,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": " {\r\n    \"nome\": \"Matheus\",\r\n    \"cpf\": \"125.493.834-40\",\r\n    \"placaVeiculo\" : \"AAA-2223\"\r\n}",
+              "raw": " {\r\n    \"nome\": \"Willian\",\r\n    \"cpf\": \"125.493.834-60\",\r\n    \"placaVeiculo\" : \"OPA-1346\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -236,7 +298,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"motoristaId\": \"1\"\r\n}",
+              "raw": "{\r\n    \"motoristaId\": 2\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -244,7 +306,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:3000/api/entregas/1/atribuir",
+              "raw": "http://localhost:3000/api/entregas/2/atribuir",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -253,7 +315,7 @@
               "path": [
                 "api",
                 "entregas",
-                "1",
+                "2",
                 "atribuir"
               ]
             }
@@ -281,6 +343,53 @@
                 "motoristas",
                 "1",
                 "inativar"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "item": [
+        {
+          "name": "Buscar motoristas ativos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/relatorios/motoristas-ativos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "relatorios",
+                "motoristas-ativos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Contar entregas por status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/relatorios/entregas-por-status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "relatorios",
+                "entregas-por-status"
               ]
             }
           },
