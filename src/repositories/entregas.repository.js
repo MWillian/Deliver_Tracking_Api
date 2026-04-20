@@ -13,6 +13,8 @@ export class EntregasRepository{
                 e.origem,
                 e.destino,
                 e.status,
+                e.created_at AS "createdAt",
+                e.updated_at AS "updatedAt",
                 COALESCE(
                     json_agg(
                         json_build_object(
@@ -39,6 +41,8 @@ export class EntregasRepository{
                 e.origem,
                 e.destino,
                 e.status,
+                e.created_at AS "createdAt",
+                e.updated_at AS "updatedAt",
                 COALESCE(
                     json_agg(
                         json_build_object(
@@ -119,6 +123,8 @@ export class EntregasRepository{
                 e.origem,
                 e.destino,
                 e.status,
+                e.created_at AS "createdAt",
+                e.updated_at AS "updatedAt",
                 COALESCE(
                     json_agg(
                         json_build_object(
@@ -145,7 +151,7 @@ export class EntregasRepository{
 
             const { rows: entregaRows } = await client.query(
                 `UPDATE entregas 
-                 SET status = $1 
+                 SET status = $1, updated_at = NOW()
                  WHERE id = $2 
                  RETURNING id`,
                 [dadosAtualizados.status, id]

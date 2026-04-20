@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum StatusEntrega {
+  CRIADA
+  EM_TRANSITO
+  ENTREGUE
+  CANCELADA
+}
+
+enum StatusMotorista {
+  ATIVO
+  INATIVO
+}
+
+model Entrega {
+  id        Int           @id @default(autoincrement())
+  descricao String        @db.VarChar(255)
+  origem    String        @db.VarChar(120)
+  destino   String        @db.VarChar(120)
+  status    StatusEntrega
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  eventos EventoEntrega[]
+
+  @@map("entregas")
+}
+
+model Motorista {
+  id            Int             @id @default(autoincrement())
+  nome          String          @db.VarChar(100)
+  placa_veiculo String          @db.VarChar(20)
+  cpf           String          @unique @db.VarChar(11)
+  status        StatusMotorista
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  eventos EventoEntrega[]
+
+  @@map("motoristas")
+}
+
+model EventoEntrega {
+  id          Int      @id @default(autoincrement())
+  entregaId   Int      @map("entrega_id")
+  dataEvento  String   @map("data_evento") @db.VarChar(20)
+  descricao   String   @db.VarChar(255)
+  motoristaId Int?     @map("motorista_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  entrega   Entrega    @relation(fields: [entregaId], references: [id], onDelete: Cascade)
+  motorista Motorista? @relation(fields: [motoristaId], references: [id])
+
+  @@map("eventos_entrega")
+}

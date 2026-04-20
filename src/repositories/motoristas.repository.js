@@ -13,7 +13,9 @@ export class MotoristasRepository{
                 nome,
                 placa_veiculo AS "placaVeiculo",
                 cpf,
-                status
+                status,
+                created_at AS "createdAt",
+                updated_at AS "updatedAt"
              FROM motoristas
              ORDER BY id`
         );
@@ -27,7 +29,9 @@ export class MotoristasRepository{
                 nome,
                 placa_veiculo AS "placaVeiculo",
                 cpf,
-                status
+                status,
+                created_at AS "createdAt",
+                updated_at AS "updatedAt"
              FROM motoristas
              WHERE status = $1
              ORDER BY id`,
@@ -43,7 +47,9 @@ export class MotoristasRepository{
                 nome,
                 placa_veiculo AS "placaVeiculo",
                 cpf,
-                status
+                status,
+                created_at AS "createdAt",
+                updated_at AS "updatedAt"
              FROM motoristas
              WHERE id = $1`,
             [id]
@@ -58,7 +64,9 @@ export class MotoristasRepository{
                 nome,
                 placa_veiculo AS "placaVeiculo",
                 cpf,
-                status
+                status,
+                created_at AS "createdAt",
+                updated_at AS "updatedAt"
              FROM motoristas
              WHERE cpf = $1`,
             [cpf]
@@ -87,7 +95,7 @@ export class MotoristasRepository{
         try {
             const { rows } = await pool.query(
                 `UPDATE motoristas 
-                 SET nome = $1, placa_veiculo = $2, cpf = $3, status = $4
+                 SET nome = $1, placa_veiculo = $2, cpf = $3, status = $4, updated_at = NOW()
                  WHERE id = $5
                  RETURNING id, nome, placa_veiculo AS "placaVeiculo", cpf, status`,
                 [dados.nome, dados.placaVeiculo, dados.cpf, dados.status, id]

@@ -1,3 +1,5 @@
+import { AppError } from '../utils/AppError.js';
+
 export class EntregasController{
     constructor(service) {
         this.service = service; 
@@ -12,13 +14,36 @@ export class EntregasController{
 
   async listarTodos(req, res, next) {
     try {
-      const { status } = req.query;
+      const { status, createdDe, createdAte } = req.query;
       
       let entregas;
       if (status) {
         entregas = await this.service.listarPorStatus(status);
       } else {
         entregas = await this.service.listarTodos();
+      }
+
+      if (createdDe || createdAte) { 
+        const dataInicio = createdDe ? new Date(createdDe) : null;
+        const dataFim = createdAte ? new Date(createdAte) : null;
+
+        if ((dataInicio && Number.isNaN(dataInicio.getTime())) || (dataFim && Number.isNaN(dataFim.getTime()))) {
+          throw new AppError('createdDe e createdAte devem estar no formato válido.', 400);
+        }
+
+        entregas = entregas.filter(entrega => {
+          const createdAt = new Date(entrega.createdAt);
+          if (Number.isNaN(createdAt.getTime())) {
+            return false;
+          }
+          if (dataInicio && createdAt < dataInicio) {
+            return false;
+          }
+          if (dataFim && createdAt > dataFim) {
+            return false;
+          }
+          return true;
+        });
       }
       res.json(entregas);
     } catch (err) { 
