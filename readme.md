@@ -6,7 +6,7 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 
 - **Node.js + Express**
     
-- **Banco de dados:** PostgreSQL com Prisma ORM
+- **Banco de dados:** SQLite com Prisma ORM
     
 - **Arquitetura:** Controller -> Service -> Repository
     
@@ -24,7 +24,7 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 2. Configure o banco de dados:
 
   - Defina a variável `DATABASE_URL` no arquivo .env
-  - Exemplo: `DATABASE_URL=postgresql://usuario:senha@localhost:5432/deliver_tracking`
+  - Exemplo: `DATABASE_URL="file:./prisma/dev.db"`
 
 3. Execute as migrations:
 

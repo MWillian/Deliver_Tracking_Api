@@ -5,7 +5,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 enum StatusEntrega {
@@ -22,9 +22,9 @@ enum StatusMotorista {
 
 model Entrega{
   id Int @id @default(autoincrement())
-  descricao String @db.VarChar(255)
-  origem String @db.VarChar(120)
-  destino String @db.VarChar(120)
+  descricao String
+  origem String
+  destino String
   status StatusEntrega
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -36,9 +36,9 @@ model Entrega{
 
 model Motorista{
   id Int @id @default(autoincrement())
-  nome String @db.VarChar(100)
-  placa_veiculo String @db.VarChar(20)
-  cpf String @unique @db.VarChar(11)
+  nome String
+  placa_veiculo String
+  cpf String @unique
   status StatusMotorista
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -51,8 +51,8 @@ model Motorista{
 model EventoEntrega{
   id Int @id @default(autoincrement())
   entregaId Int @map("entrega_id")
-  dataEvento String @db.VarChar(20) @map("data_evento")
-  descricao String @db.VarChar(255)
+  dataEvento String @map("data_evento")
+  descricao String
   motoristaId Int? @map("motorista_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
