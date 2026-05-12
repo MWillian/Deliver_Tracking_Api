@@ -4,7 +4,9 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 
 ## Tecnologias e Arquitetura
 
-- **Node.js + Express**
+- **Node.js + Express:** O framework Express é a base do servidor, responsável tanto pela criação das rotas da API REST quanto por gerenciar as rotas visuais. Ele orquestra os middlewares (arquivos estáticos, tratamento de erros) para o funcionamento completo da aplicação.
+    
+- **Server-Side Rendering (SSR):** Utilizando a engine **EJS**, as visualizações (telas) são pré-processadas no servidor (SSR). O servidor Express obtém os dados através dos *Controllers* e renderiza o HTML final mesclado a esses dados dinamicamente, enviando-os prontos para o cliente.
     
 - **Banco de dados:** SQLite com Prisma ORM
     
@@ -47,9 +49,16 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 ## Dependências Necessárias
 
 - `express`
+- `ejs`
 - `dotenv`
 - `@prisma/client`
 - `prisma`
+
+## Interface Web e Painel Administrativo
+
+Através do SSR implementado, a aplicação possui um Dashboard acessível pelo navegador. Todas as operações de gestão também podem ser feitas por lá.
+
+- **Acesso ao Painel:** Navegue para a rota `/painel` no seu navegador (exemplo: `http://localhost:3000/painel`).
         
 ##  Documentação da API
 
