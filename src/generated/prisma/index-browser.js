@@ -117,6 +117,23 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.RefreshTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  usuarioId: 'usuarioId',
+  expiresAt: 'expiresAt',
+  criadoEm: 'criadoEm'
+};
+
+exports.Prisma.UsuarioScalarFieldEnum = {
+  id: 'id',
+  nome: 'nome',
+  email: 'email',
+  senha: 'senha',
+  papel: 'papel',
+  criadoEm: 'criadoEm'
+};
+
 exports.Prisma.EntregaScalarFieldEnum = {
   id: 'id',
   descricao: 'descricao',
@@ -156,6 +173,11 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Papel = exports.$Enums.Papel = {
+  OPERADOR: 'OPERADOR',
+  GESTOR: 'GESTOR'
+};
+
 exports.StatusEntrega = exports.$Enums.StatusEntrega = {
   CRIADA: 'CRIADA',
   EM_TRANSITO: 'EM_TRANSITO',
@@ -169,6 +191,8 @@ exports.StatusMotorista = exports.$Enums.StatusMotorista = {
 };
 
 exports.Prisma.ModelName = {
+  RefreshToken: 'RefreshToken',
+  Usuario: 'Usuario',
   Entrega: 'Entrega',
   Motorista: 'Motorista',
   EventoEntrega: 'EventoEntrega'
