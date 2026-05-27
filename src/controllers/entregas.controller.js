@@ -78,7 +78,8 @@ export class EntregasController{
 
   async criar(req, res, next) {
     try {
-        const novaEntrega = await this.service.criar(req.body);
+        const dadosEntrega = { ...req.body, criadorId: req.usuario.id };
+        const novaEntrega = await this.service.criar(dadosEntrega);
         res.status(201).json(novaEntrega);
     } catch (err) { 
       next(err); 

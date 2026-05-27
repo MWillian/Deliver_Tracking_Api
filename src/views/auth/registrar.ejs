@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="deliver-list-container" style="max-width: 400px; margin: 2rem auto; padding: 2rem;">
+        <h1 style="text-align: center; margin-bottom: 0.5rem;">Registrar</h1>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Crie uma nova conta</p>
+        
+        <form id="registerForm" class="form-grid">
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" name="nome" class="form-control" required placeholder="Seu nome">
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" class="form-control" required placeholder="seu@email.com">
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" class="form-control" required placeholder="Sua senha forte (min. 6 chars)" minlength="6">
+            </div>
+
+            <div id="registerError" style="color: #ef4444; grid-column: span 2; display: none; text-align: center;"></div>
+
+            <div class="form-group" style="grid-column: span 2; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Criar Conta</button>
+            </div>
+            
+            <div style="grid-column: span 2; text-align: center; margin-top: 1rem;">
+                Já tem uma conta? <a href="/login">Entre aqui</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
+    const errorDiv = document.getElementById('registerError');
+    
+    errorDiv.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Aguarde...';
+
+    try {
+        await axios.post('/api/auth/registrar', { nome, email, senha });
+        
+        alert('Conta criada com sucesso! Faça o login para acessar.');
+        window.location.href = '/login';
+    } catch (err) {
+        errorDiv.textContent = err.response?.data?.erro || 'Erro ao registrar. Tente novamente.';
+        errorDiv.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Criar Conta';
+    }
+});
+</script>
