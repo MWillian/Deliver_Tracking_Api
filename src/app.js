@@ -39,6 +39,14 @@ app.use((req, res, next) => {
 app.use(injetarLocals);
 
 app.use('/api', router);
+
+// Rotas de visualização abertas para auth
+app.get('/login', (req, res) => res.render('auth/login'));
+app.get('/registrar', (req, res) => res.render('auth/registrar'));
+app.get('/logout', (req, res) => {
+    res.redirect('/login');
+});
+
 app.use('/painel', painelRouter);
 app.use(middlewareDeErros);
 
