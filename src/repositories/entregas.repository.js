@@ -12,6 +12,7 @@ const mapEntrega = entrega => ({
     origem: entrega.origem,
     destino: entrega.destino,
     status: entrega.status,
+    criadorId: entrega.criadorId,
     createdAt: entrega.createdAt,
     updatedAt: entrega.updatedAt,
     historico: mapHistorico(entrega.eventos)
@@ -82,6 +83,7 @@ export class EntregasRepository{
                 origem: dados.origem,
                 destino: dados.destino,
                 status: dados.status,
+                criadorId: dados.criadorId,
                 eventos: {
                     create: historico.map(evento => ({
                         dataEvento: evento.data,
