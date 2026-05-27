@@ -8,6 +8,34 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Papel {
+  OPERADOR
+  GESTOR
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  usuarioId Int      @map("usuario_id")
+  expiresAt DateTime @map("expires_at")
+  criadoEm  DateTime @default(now()) @map("criado_em")
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Usuario {
+  id            Int            @id @default(autoincrement())
+  nome          String
+  email         String         @unique
+  senha         String
+  papel         Papel          @default(OPERADOR)
+  criadoEm      DateTime       @default(now()) @map("criado_em")
+  refreshTokens RefreshToken[]
+
+  @@map("usuarios")
+}
+
 enum StatusEntrega {
   CRIADA
   EM_TRANSITO
