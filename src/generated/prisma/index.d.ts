@@ -1274,10 +1274,12 @@ export namespace Prisma {
 
   export type UsuarioCountOutputType = {
     refreshTokens: number
+    entregas: number
   }
 
   export type UsuarioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     refreshTokens?: boolean | UsuarioCountOutputTypeCountRefreshTokensArgs
+    entregas?: boolean | UsuarioCountOutputTypeCountEntregasArgs
   }
 
   // Custom InputTypes
@@ -1296,6 +1298,13 @@ export namespace Prisma {
    */
   export type UsuarioCountOutputTypeCountRefreshTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RefreshTokenWhereInput
+  }
+
+  /**
+   * UsuarioCountOutputType without action
+   */
+  export type UsuarioCountOutputTypeCountEntregasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EntregaWhereInput
   }
 
 
@@ -2671,6 +2680,7 @@ export namespace Prisma {
     papel?: boolean
     criadoEm?: boolean
     refreshTokens?: boolean | Usuario$refreshTokensArgs<ExtArgs>
+    entregas?: boolean | Usuario$entregasArgs<ExtArgs>
     _count?: boolean | UsuarioCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["usuario"]>
 
@@ -2704,6 +2714,7 @@ export namespace Prisma {
   export type UsuarioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nome" | "email" | "senha" | "papel" | "criadoEm", ExtArgs["result"]["usuario"]>
   export type UsuarioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     refreshTokens?: boolean | Usuario$refreshTokensArgs<ExtArgs>
+    entregas?: boolean | Usuario$entregasArgs<ExtArgs>
     _count?: boolean | UsuarioCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UsuarioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2713,6 +2724,7 @@ export namespace Prisma {
     name: "Usuario"
     objects: {
       refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
+      entregas: Prisma.$EntregaPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3116,6 +3128,7 @@ export namespace Prisma {
   export interface Prisma__UsuarioClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     refreshTokens<T extends Usuario$refreshTokensArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    entregas<T extends Usuario$entregasArgs<ExtArgs> = {}>(args?: Subset<T, Usuario$entregasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntregaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3566,6 +3579,30 @@ export namespace Prisma {
   }
 
   /**
+   * Usuario.entregas
+   */
+  export type Usuario$entregasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Entrega
+     */
+    select?: EntregaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Entrega
+     */
+    omit?: EntregaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EntregaInclude<ExtArgs> | null
+    where?: EntregaWhereInput
+    orderBy?: EntregaOrderByWithRelationInput | EntregaOrderByWithRelationInput[]
+    cursor?: EntregaWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EntregaScalarFieldEnum | EntregaScalarFieldEnum[]
+  }
+
+  /**
    * Usuario without action
    */
   export type UsuarioDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3598,10 +3635,12 @@ export namespace Prisma {
 
   export type EntregaAvgAggregateOutputType = {
     id: number | null
+    criadorId: number | null
   }
 
   export type EntregaSumAggregateOutputType = {
     id: number | null
+    criadorId: number | null
   }
 
   export type EntregaMinAggregateOutputType = {
@@ -3612,6 +3651,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega | null
     createdAt: Date | null
     updatedAt: Date | null
+    criadorId: number | null
   }
 
   export type EntregaMaxAggregateOutputType = {
@@ -3622,6 +3662,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega | null
     createdAt: Date | null
     updatedAt: Date | null
+    criadorId: number | null
   }
 
   export type EntregaCountAggregateOutputType = {
@@ -3632,16 +3673,19 @@ export namespace Prisma {
     status: number
     createdAt: number
     updatedAt: number
+    criadorId: number
     _all: number
   }
 
 
   export type EntregaAvgAggregateInputType = {
     id?: true
+    criadorId?: true
   }
 
   export type EntregaSumAggregateInputType = {
     id?: true
+    criadorId?: true
   }
 
   export type EntregaMinAggregateInputType = {
@@ -3652,6 +3696,7 @@ export namespace Prisma {
     status?: true
     createdAt?: true
     updatedAt?: true
+    criadorId?: true
   }
 
   export type EntregaMaxAggregateInputType = {
@@ -3662,6 +3707,7 @@ export namespace Prisma {
     status?: true
     createdAt?: true
     updatedAt?: true
+    criadorId?: true
   }
 
   export type EntregaCountAggregateInputType = {
@@ -3672,6 +3718,7 @@ export namespace Prisma {
     status?: true
     createdAt?: true
     updatedAt?: true
+    criadorId?: true
     _all?: true
   }
 
@@ -3769,6 +3816,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega
     createdAt: Date
     updatedAt: Date
+    criadorId: number | null
     _count: EntregaCountAggregateOutputType | null
     _avg: EntregaAvgAggregateOutputType | null
     _sum: EntregaSumAggregateOutputType | null
@@ -3798,6 +3846,8 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    criadorId?: boolean
+    criador?: boolean | Entrega$criadorArgs<ExtArgs>
     eventos?: boolean | Entrega$eventosArgs<ExtArgs>
     _count?: boolean | EntregaCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["entrega"]>
@@ -3810,6 +3860,8 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    criadorId?: boolean
+    criador?: boolean | Entrega$criadorArgs<ExtArgs>
   }, ExtArgs["result"]["entrega"]>
 
   export type EntregaSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3820,6 +3872,8 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    criadorId?: boolean
+    criador?: boolean | Entrega$criadorArgs<ExtArgs>
   }, ExtArgs["result"]["entrega"]>
 
   export type EntregaSelectScalar = {
@@ -3830,19 +3884,26 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    criadorId?: boolean
   }
 
-  export type EntregaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "descricao" | "origem" | "destino" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["entrega"]>
+  export type EntregaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "descricao" | "origem" | "destino" | "status" | "createdAt" | "updatedAt" | "criadorId", ExtArgs["result"]["entrega"]>
   export type EntregaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    criador?: boolean | Entrega$criadorArgs<ExtArgs>
     eventos?: boolean | Entrega$eventosArgs<ExtArgs>
     _count?: boolean | EntregaCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type EntregaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type EntregaIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type EntregaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    criador?: boolean | Entrega$criadorArgs<ExtArgs>
+  }
+  export type EntregaIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    criador?: boolean | Entrega$criadorArgs<ExtArgs>
+  }
 
   export type $EntregaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Entrega"
     objects: {
+      criador: Prisma.$UsuarioPayload<ExtArgs> | null
       eventos: Prisma.$EventoEntregaPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3853,6 +3914,7 @@ export namespace Prisma {
       status: $Enums.StatusEntrega
       createdAt: Date
       updatedAt: Date
+      criadorId: number | null
     }, ExtArgs["result"]["entrega"]>
     composites: {}
   }
@@ -4247,6 +4309,7 @@ export namespace Prisma {
    */
   export interface Prisma__EntregaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    criador<T extends Entrega$criadorArgs<ExtArgs> = {}>(args?: Subset<T, Entrega$criadorArgs<ExtArgs>>): Prisma__UsuarioClient<$Result.GetResult<Prisma.$UsuarioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     eventos<T extends Entrega$eventosArgs<ExtArgs> = {}>(args?: Subset<T, Entrega$eventosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventoEntregaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4284,6 +4347,7 @@ export namespace Prisma {
     readonly status: FieldRef<"Entrega", 'StatusEntrega'>
     readonly createdAt: FieldRef<"Entrega", 'DateTime'>
     readonly updatedAt: FieldRef<"Entrega", 'DateTime'>
+    readonly criadorId: FieldRef<"Entrega", 'Int'>
   }
     
 
@@ -4536,6 +4600,10 @@ export namespace Prisma {
      * The data used to create many Entregas.
      */
     data: EntregaCreateManyInput | EntregaCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EntregaIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4606,6 +4674,10 @@ export namespace Prisma {
      * Limit how many Entregas to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EntregaIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4672,6 +4744,25 @@ export namespace Prisma {
      * Limit how many Entregas to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Entrega.criador
+   */
+  export type Entrega$criadorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Usuario
+     */
+    select?: UsuarioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Usuario
+     */
+    omit?: UsuarioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UsuarioInclude<ExtArgs> | null
+    where?: UsuarioWhereInput
   }
 
   /**
@@ -7047,7 +7138,8 @@ export namespace Prisma {
     destino: 'destino',
     status: 'status',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    criadorId: 'criadorId'
   };
 
   export type EntregaScalarFieldEnum = (typeof EntregaScalarFieldEnum)[keyof typeof EntregaScalarFieldEnum]
@@ -7220,6 +7312,7 @@ export namespace Prisma {
     papel?: EnumPapelFilter<"Usuario"> | $Enums.Papel
     criadoEm?: DateTimeFilter<"Usuario"> | Date | string
     refreshTokens?: RefreshTokenListRelationFilter
+    entregas?: EntregaListRelationFilter
   }
 
   export type UsuarioOrderByWithRelationInput = {
@@ -7230,6 +7323,7 @@ export namespace Prisma {
     papel?: SortOrder
     criadoEm?: SortOrder
     refreshTokens?: RefreshTokenOrderByRelationAggregateInput
+    entregas?: EntregaOrderByRelationAggregateInput
   }
 
   export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
@@ -7243,6 +7337,7 @@ export namespace Prisma {
     papel?: EnumPapelFilter<"Usuario"> | $Enums.Papel
     criadoEm?: DateTimeFilter<"Usuario"> | Date | string
     refreshTokens?: RefreshTokenListRelationFilter
+    entregas?: EntregaListRelationFilter
   }, "id" | "email">
 
   export type UsuarioOrderByWithAggregationInput = {
@@ -7282,6 +7377,8 @@ export namespace Prisma {
     status?: EnumStatusEntregaFilter<"Entrega"> | $Enums.StatusEntrega
     createdAt?: DateTimeFilter<"Entrega"> | Date | string
     updatedAt?: DateTimeFilter<"Entrega"> | Date | string
+    criadorId?: IntNullableFilter<"Entrega"> | number | null
+    criador?: XOR<UsuarioNullableScalarRelationFilter, UsuarioWhereInput> | null
     eventos?: EventoEntregaListRelationFilter
   }
 
@@ -7293,6 +7390,8 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    criadorId?: SortOrderInput | SortOrder
+    criador?: UsuarioOrderByWithRelationInput
     eventos?: EventoEntregaOrderByRelationAggregateInput
   }
 
@@ -7307,6 +7406,8 @@ export namespace Prisma {
     status?: EnumStatusEntregaFilter<"Entrega"> | $Enums.StatusEntrega
     createdAt?: DateTimeFilter<"Entrega"> | Date | string
     updatedAt?: DateTimeFilter<"Entrega"> | Date | string
+    criadorId?: IntNullableFilter<"Entrega"> | number | null
+    criador?: XOR<UsuarioNullableScalarRelationFilter, UsuarioWhereInput> | null
     eventos?: EventoEntregaListRelationFilter
   }, "id">
 
@@ -7318,6 +7419,7 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    criadorId?: SortOrderInput | SortOrder
     _count?: EntregaCountOrderByAggregateInput
     _avg?: EntregaAvgOrderByAggregateInput
     _max?: EntregaMaxOrderByAggregateInput
@@ -7336,6 +7438,7 @@ export namespace Prisma {
     status?: EnumStatusEntregaWithAggregatesFilter<"Entrega"> | $Enums.StatusEntrega
     createdAt?: DateTimeWithAggregatesFilter<"Entrega"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Entrega"> | Date | string
+    criadorId?: IntNullableWithAggregatesFilter<"Entrega"> | number | null
   }
 
   export type MotoristaWhereInput = {
@@ -7534,6 +7637,7 @@ export namespace Prisma {
     papel?: $Enums.Papel
     criadoEm?: Date | string
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUsuarioInput
+    entregas?: EntregaCreateNestedManyWithoutCriadorInput
   }
 
   export type UsuarioUncheckedCreateInput = {
@@ -7544,6 +7648,7 @@ export namespace Prisma {
     papel?: $Enums.Papel
     criadoEm?: Date | string
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUsuarioInput
+    entregas?: EntregaUncheckedCreateNestedManyWithoutCriadorInput
   }
 
   export type UsuarioUpdateInput = {
@@ -7553,6 +7658,7 @@ export namespace Prisma {
     papel?: EnumPapelFieldUpdateOperationsInput | $Enums.Papel
     criadoEm?: DateTimeFieldUpdateOperationsInput | Date | string
     refreshTokens?: RefreshTokenUpdateManyWithoutUsuarioNestedInput
+    entregas?: EntregaUpdateManyWithoutCriadorNestedInput
   }
 
   export type UsuarioUncheckedUpdateInput = {
@@ -7563,6 +7669,7 @@ export namespace Prisma {
     papel?: EnumPapelFieldUpdateOperationsInput | $Enums.Papel
     criadoEm?: DateTimeFieldUpdateOperationsInput | Date | string
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUsuarioNestedInput
+    entregas?: EntregaUncheckedUpdateManyWithoutCriadorNestedInput
   }
 
   export type UsuarioCreateManyInput = {
@@ -7598,6 +7705,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega
     createdAt?: Date | string
     updatedAt?: Date | string
+    criador?: UsuarioCreateNestedOneWithoutEntregasInput
     eventos?: EventoEntregaCreateNestedManyWithoutEntregaInput
   }
 
@@ -7609,6 +7717,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega
     createdAt?: Date | string
     updatedAt?: Date | string
+    criadorId?: number | null
     eventos?: EventoEntregaUncheckedCreateNestedManyWithoutEntregaInput
   }
 
@@ -7619,6 +7728,7 @@ export namespace Prisma {
     status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    criador?: UsuarioUpdateOneWithoutEntregasNestedInput
     eventos?: EventoEntregaUpdateManyWithoutEntregaNestedInput
   }
 
@@ -7630,6 +7740,7 @@ export namespace Prisma {
     status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    criadorId?: NullableIntFieldUpdateOperationsInput | number | null
     eventos?: EventoEntregaUncheckedUpdateManyWithoutEntregaNestedInput
   }
 
@@ -7641,6 +7752,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega
     createdAt?: Date | string
     updatedAt?: Date | string
+    criadorId?: number | null
   }
 
   export type EntregaUpdateManyMutationInput = {
@@ -7660,6 +7772,7 @@ export namespace Prisma {
     status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    criadorId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MotoristaCreateInput = {
@@ -7933,7 +8046,17 @@ export namespace Prisma {
     none?: RefreshTokenWhereInput
   }
 
+  export type EntregaListRelationFilter = {
+    every?: EntregaWhereInput
+    some?: EntregaWhereInput
+    none?: EntregaWhereInput
+  }
+
   export type RefreshTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type EntregaOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -7989,10 +8112,31 @@ export namespace Prisma {
     not?: NestedEnumStatusEntregaFilter<$PrismaModel> | $Enums.StatusEntrega
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type UsuarioNullableScalarRelationFilter = {
+    is?: UsuarioWhereInput | null
+    isNot?: UsuarioWhereInput | null
+  }
+
   export type EventoEntregaListRelationFilter = {
     every?: EventoEntregaWhereInput
     some?: EventoEntregaWhereInput
     none?: EventoEntregaWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type EventoEntregaOrderByRelationAggregateInput = {
@@ -8007,10 +8151,12 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    criadorId?: SortOrder
   }
 
   export type EntregaAvgOrderByAggregateInput = {
     id?: SortOrder
+    criadorId?: SortOrder
   }
 
   export type EntregaMaxOrderByAggregateInput = {
@@ -8021,6 +8167,7 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    criadorId?: SortOrder
   }
 
   export type EntregaMinOrderByAggregateInput = {
@@ -8031,10 +8178,12 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    criadorId?: SortOrder
   }
 
   export type EntregaSumOrderByAggregateInput = {
     id?: SortOrder
+    criadorId?: SortOrder
   }
 
   export type EnumStatusEntregaWithAggregatesFilter<$PrismaModel = never> = {
@@ -8045,6 +8194,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumStatusEntregaFilter<$PrismaModel>
     _max?: NestedEnumStatusEntregaFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type EnumStatusMotoristaFilter<$PrismaModel = never> = {
@@ -8102,17 +8267,6 @@ export namespace Prisma {
     _max?: NestedEnumStatusMotoristaFilter<$PrismaModel>
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type EntregaScalarRelationFilter = {
     is?: EntregaWhereInput
     isNot?: EntregaWhereInput
@@ -8121,11 +8275,6 @@ export namespace Prisma {
   export type MotoristaNullableScalarRelationFilter = {
     is?: MotoristaWhereInput | null
     isNot?: MotoristaWhereInput | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type EventoEntregaCountOrderByAggregateInput = {
@@ -8170,22 +8319,6 @@ export namespace Prisma {
     motoristaId?: SortOrder
   }
 
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
   export type UsuarioCreateNestedOneWithoutRefreshTokensInput = {
     create?: XOR<UsuarioCreateWithoutRefreshTokensInput, UsuarioUncheckedCreateWithoutRefreshTokensInput>
     connectOrCreate?: UsuarioCreateOrConnectWithoutRefreshTokensInput
@@ -8223,11 +8356,25 @@ export namespace Prisma {
     connect?: RefreshTokenWhereUniqueInput | RefreshTokenWhereUniqueInput[]
   }
 
+  export type EntregaCreateNestedManyWithoutCriadorInput = {
+    create?: XOR<EntregaCreateWithoutCriadorInput, EntregaUncheckedCreateWithoutCriadorInput> | EntregaCreateWithoutCriadorInput[] | EntregaUncheckedCreateWithoutCriadorInput[]
+    connectOrCreate?: EntregaCreateOrConnectWithoutCriadorInput | EntregaCreateOrConnectWithoutCriadorInput[]
+    createMany?: EntregaCreateManyCriadorInputEnvelope
+    connect?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+  }
+
   export type RefreshTokenUncheckedCreateNestedManyWithoutUsuarioInput = {
     create?: XOR<RefreshTokenCreateWithoutUsuarioInput, RefreshTokenUncheckedCreateWithoutUsuarioInput> | RefreshTokenCreateWithoutUsuarioInput[] | RefreshTokenUncheckedCreateWithoutUsuarioInput[]
     connectOrCreate?: RefreshTokenCreateOrConnectWithoutUsuarioInput | RefreshTokenCreateOrConnectWithoutUsuarioInput[]
     createMany?: RefreshTokenCreateManyUsuarioInputEnvelope
     connect?: RefreshTokenWhereUniqueInput | RefreshTokenWhereUniqueInput[]
+  }
+
+  export type EntregaUncheckedCreateNestedManyWithoutCriadorInput = {
+    create?: XOR<EntregaCreateWithoutCriadorInput, EntregaUncheckedCreateWithoutCriadorInput> | EntregaCreateWithoutCriadorInput[] | EntregaUncheckedCreateWithoutCriadorInput[]
+    connectOrCreate?: EntregaCreateOrConnectWithoutCriadorInput | EntregaCreateOrConnectWithoutCriadorInput[]
+    createMany?: EntregaCreateManyCriadorInputEnvelope
+    connect?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
   }
 
   export type EnumPapelFieldUpdateOperationsInput = {
@@ -8248,6 +8395,20 @@ export namespace Prisma {
     deleteMany?: RefreshTokenScalarWhereInput | RefreshTokenScalarWhereInput[]
   }
 
+  export type EntregaUpdateManyWithoutCriadorNestedInput = {
+    create?: XOR<EntregaCreateWithoutCriadorInput, EntregaUncheckedCreateWithoutCriadorInput> | EntregaCreateWithoutCriadorInput[] | EntregaUncheckedCreateWithoutCriadorInput[]
+    connectOrCreate?: EntregaCreateOrConnectWithoutCriadorInput | EntregaCreateOrConnectWithoutCriadorInput[]
+    upsert?: EntregaUpsertWithWhereUniqueWithoutCriadorInput | EntregaUpsertWithWhereUniqueWithoutCriadorInput[]
+    createMany?: EntregaCreateManyCriadorInputEnvelope
+    set?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    disconnect?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    delete?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    connect?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    update?: EntregaUpdateWithWhereUniqueWithoutCriadorInput | EntregaUpdateWithWhereUniqueWithoutCriadorInput[]
+    updateMany?: EntregaUpdateManyWithWhereWithoutCriadorInput | EntregaUpdateManyWithWhereWithoutCriadorInput[]
+    deleteMany?: EntregaScalarWhereInput | EntregaScalarWhereInput[]
+  }
+
   export type RefreshTokenUncheckedUpdateManyWithoutUsuarioNestedInput = {
     create?: XOR<RefreshTokenCreateWithoutUsuarioInput, RefreshTokenUncheckedCreateWithoutUsuarioInput> | RefreshTokenCreateWithoutUsuarioInput[] | RefreshTokenUncheckedCreateWithoutUsuarioInput[]
     connectOrCreate?: RefreshTokenCreateOrConnectWithoutUsuarioInput | RefreshTokenCreateOrConnectWithoutUsuarioInput[]
@@ -8260,6 +8421,26 @@ export namespace Prisma {
     update?: RefreshTokenUpdateWithWhereUniqueWithoutUsuarioInput | RefreshTokenUpdateWithWhereUniqueWithoutUsuarioInput[]
     updateMany?: RefreshTokenUpdateManyWithWhereWithoutUsuarioInput | RefreshTokenUpdateManyWithWhereWithoutUsuarioInput[]
     deleteMany?: RefreshTokenScalarWhereInput | RefreshTokenScalarWhereInput[]
+  }
+
+  export type EntregaUncheckedUpdateManyWithoutCriadorNestedInput = {
+    create?: XOR<EntregaCreateWithoutCriadorInput, EntregaUncheckedCreateWithoutCriadorInput> | EntregaCreateWithoutCriadorInput[] | EntregaUncheckedCreateWithoutCriadorInput[]
+    connectOrCreate?: EntregaCreateOrConnectWithoutCriadorInput | EntregaCreateOrConnectWithoutCriadorInput[]
+    upsert?: EntregaUpsertWithWhereUniqueWithoutCriadorInput | EntregaUpsertWithWhereUniqueWithoutCriadorInput[]
+    createMany?: EntregaCreateManyCriadorInputEnvelope
+    set?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    disconnect?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    delete?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    connect?: EntregaWhereUniqueInput | EntregaWhereUniqueInput[]
+    update?: EntregaUpdateWithWhereUniqueWithoutCriadorInput | EntregaUpdateWithWhereUniqueWithoutCriadorInput[]
+    updateMany?: EntregaUpdateManyWithWhereWithoutCriadorInput | EntregaUpdateManyWithWhereWithoutCriadorInput[]
+    deleteMany?: EntregaScalarWhereInput | EntregaScalarWhereInput[]
+  }
+
+  export type UsuarioCreateNestedOneWithoutEntregasInput = {
+    create?: XOR<UsuarioCreateWithoutEntregasInput, UsuarioUncheckedCreateWithoutEntregasInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutEntregasInput
+    connect?: UsuarioWhereUniqueInput
   }
 
   export type EventoEntregaCreateNestedManyWithoutEntregaInput = {
@@ -8280,6 +8461,16 @@ export namespace Prisma {
     set?: $Enums.StatusEntrega
   }
 
+  export type UsuarioUpdateOneWithoutEntregasNestedInput = {
+    create?: XOR<UsuarioCreateWithoutEntregasInput, UsuarioUncheckedCreateWithoutEntregasInput>
+    connectOrCreate?: UsuarioCreateOrConnectWithoutEntregasInput
+    upsert?: UsuarioUpsertWithoutEntregasInput
+    disconnect?: UsuarioWhereInput | boolean
+    delete?: UsuarioWhereInput | boolean
+    connect?: UsuarioWhereUniqueInput
+    update?: XOR<XOR<UsuarioUpdateToOneWithWhereWithoutEntregasInput, UsuarioUpdateWithoutEntregasInput>, UsuarioUncheckedUpdateWithoutEntregasInput>
+  }
+
   export type EventoEntregaUpdateManyWithoutEntregaNestedInput = {
     create?: XOR<EventoEntregaCreateWithoutEntregaInput, EventoEntregaUncheckedCreateWithoutEntregaInput> | EventoEntregaCreateWithoutEntregaInput[] | EventoEntregaUncheckedCreateWithoutEntregaInput[]
     connectOrCreate?: EventoEntregaCreateOrConnectWithoutEntregaInput | EventoEntregaCreateOrConnectWithoutEntregaInput[]
@@ -8292,6 +8483,14 @@ export namespace Prisma {
     update?: EventoEntregaUpdateWithWhereUniqueWithoutEntregaInput | EventoEntregaUpdateWithWhereUniqueWithoutEntregaInput[]
     updateMany?: EventoEntregaUpdateManyWithWhereWithoutEntregaInput | EventoEntregaUpdateManyWithWhereWithoutEntregaInput[]
     deleteMany?: EventoEntregaScalarWhereInput | EventoEntregaScalarWhereInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type EventoEntregaUncheckedUpdateManyWithoutEntregaNestedInput = {
@@ -8382,14 +8581,6 @@ export namespace Prisma {
     delete?: MotoristaWhereInput | boolean
     connect?: MotoristaWhereUniqueInput
     update?: XOR<XOR<MotoristaUpdateToOneWithWhereWithoutEventosInput, MotoristaUpdateWithoutEventosInput>, MotoristaUncheckedUpdateWithoutEventosInput>
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -8510,33 +8701,6 @@ export namespace Prisma {
     not?: NestedEnumStatusEntregaFilter<$PrismaModel> | $Enums.StatusEntrega
   }
 
-  export type NestedEnumStatusEntregaWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.StatusEntrega | EnumStatusEntregaFieldRefInput<$PrismaModel>
-    in?: $Enums.StatusEntrega[]
-    notIn?: $Enums.StatusEntrega[]
-    not?: NestedEnumStatusEntregaWithAggregatesFilter<$PrismaModel> | $Enums.StatusEntrega
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumStatusEntregaFilter<$PrismaModel>
-    _max?: NestedEnumStatusEntregaFilter<$PrismaModel>
-  }
-
-  export type NestedEnumStatusMotoristaFilter<$PrismaModel = never> = {
-    equals?: $Enums.StatusMotorista | EnumStatusMotoristaFieldRefInput<$PrismaModel>
-    in?: $Enums.StatusMotorista[]
-    notIn?: $Enums.StatusMotorista[]
-    not?: NestedEnumStatusMotoristaFilter<$PrismaModel> | $Enums.StatusMotorista
-  }
-
-  export type NestedEnumStatusMotoristaWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.StatusMotorista | EnumStatusMotoristaFieldRefInput<$PrismaModel>
-    in?: $Enums.StatusMotorista[]
-    notIn?: $Enums.StatusMotorista[]
-    not?: NestedEnumStatusMotoristaWithAggregatesFilter<$PrismaModel> | $Enums.StatusMotorista
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumStatusMotoristaFilter<$PrismaModel>
-    _max?: NestedEnumStatusMotoristaFilter<$PrismaModel>
-  }
-
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | null
@@ -8546,6 +8710,16 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumStatusEntregaWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StatusEntrega | EnumStatusEntregaFieldRefInput<$PrismaModel>
+    in?: $Enums.StatusEntrega[]
+    notIn?: $Enums.StatusEntrega[]
+    not?: NestedEnumStatusEntregaWithAggregatesFilter<$PrismaModel> | $Enums.StatusEntrega
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStatusEntregaFilter<$PrismaModel>
+    _max?: NestedEnumStatusEntregaFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -8575,12 +8749,30 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedEnumStatusMotoristaFilter<$PrismaModel = never> = {
+    equals?: $Enums.StatusMotorista | EnumStatusMotoristaFieldRefInput<$PrismaModel>
+    in?: $Enums.StatusMotorista[]
+    notIn?: $Enums.StatusMotorista[]
+    not?: NestedEnumStatusMotoristaFilter<$PrismaModel> | $Enums.StatusMotorista
+  }
+
+  export type NestedEnumStatusMotoristaWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StatusMotorista | EnumStatusMotoristaFieldRefInput<$PrismaModel>
+    in?: $Enums.StatusMotorista[]
+    notIn?: $Enums.StatusMotorista[]
+    not?: NestedEnumStatusMotoristaWithAggregatesFilter<$PrismaModel> | $Enums.StatusMotorista
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStatusMotoristaFilter<$PrismaModel>
+    _max?: NestedEnumStatusMotoristaFilter<$PrismaModel>
+  }
+
   export type UsuarioCreateWithoutRefreshTokensInput = {
     nome: string
     email: string
     senha: string
     papel?: $Enums.Papel
     criadoEm?: Date | string
+    entregas?: EntregaCreateNestedManyWithoutCriadorInput
   }
 
   export type UsuarioUncheckedCreateWithoutRefreshTokensInput = {
@@ -8590,6 +8782,7 @@ export namespace Prisma {
     senha: string
     papel?: $Enums.Papel
     criadoEm?: Date | string
+    entregas?: EntregaUncheckedCreateNestedManyWithoutCriadorInput
   }
 
   export type UsuarioCreateOrConnectWithoutRefreshTokensInput = {
@@ -8614,6 +8807,7 @@ export namespace Prisma {
     senha?: StringFieldUpdateOperationsInput | string
     papel?: EnumPapelFieldUpdateOperationsInput | $Enums.Papel
     criadoEm?: DateTimeFieldUpdateOperationsInput | Date | string
+    entregas?: EntregaUpdateManyWithoutCriadorNestedInput
   }
 
   export type UsuarioUncheckedUpdateWithoutRefreshTokensInput = {
@@ -8623,6 +8817,7 @@ export namespace Prisma {
     senha?: StringFieldUpdateOperationsInput | string
     papel?: EnumPapelFieldUpdateOperationsInput | $Enums.Papel
     criadoEm?: DateTimeFieldUpdateOperationsInput | Date | string
+    entregas?: EntregaUncheckedUpdateManyWithoutCriadorNestedInput
   }
 
   export type RefreshTokenCreateWithoutUsuarioInput = {
@@ -8645,6 +8840,36 @@ export namespace Prisma {
 
   export type RefreshTokenCreateManyUsuarioInputEnvelope = {
     data: RefreshTokenCreateManyUsuarioInput | RefreshTokenCreateManyUsuarioInput[]
+  }
+
+  export type EntregaCreateWithoutCriadorInput = {
+    descricao: string
+    origem: string
+    destino: string
+    status: $Enums.StatusEntrega
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventos?: EventoEntregaCreateNestedManyWithoutEntregaInput
+  }
+
+  export type EntregaUncheckedCreateWithoutCriadorInput = {
+    id?: number
+    descricao: string
+    origem: string
+    destino: string
+    status: $Enums.StatusEntrega
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    eventos?: EventoEntregaUncheckedCreateNestedManyWithoutEntregaInput
+  }
+
+  export type EntregaCreateOrConnectWithoutCriadorInput = {
+    where: EntregaWhereUniqueInput
+    create: XOR<EntregaCreateWithoutCriadorInput, EntregaUncheckedCreateWithoutCriadorInput>
+  }
+
+  export type EntregaCreateManyCriadorInputEnvelope = {
+    data: EntregaCreateManyCriadorInput | EntregaCreateManyCriadorInput[]
   }
 
   export type RefreshTokenUpsertWithWhereUniqueWithoutUsuarioInput = {
@@ -8674,6 +8899,60 @@ export namespace Prisma {
     criadoEm?: DateTimeFilter<"RefreshToken"> | Date | string
   }
 
+  export type EntregaUpsertWithWhereUniqueWithoutCriadorInput = {
+    where: EntregaWhereUniqueInput
+    update: XOR<EntregaUpdateWithoutCriadorInput, EntregaUncheckedUpdateWithoutCriadorInput>
+    create: XOR<EntregaCreateWithoutCriadorInput, EntregaUncheckedCreateWithoutCriadorInput>
+  }
+
+  export type EntregaUpdateWithWhereUniqueWithoutCriadorInput = {
+    where: EntregaWhereUniqueInput
+    data: XOR<EntregaUpdateWithoutCriadorInput, EntregaUncheckedUpdateWithoutCriadorInput>
+  }
+
+  export type EntregaUpdateManyWithWhereWithoutCriadorInput = {
+    where: EntregaScalarWhereInput
+    data: XOR<EntregaUpdateManyMutationInput, EntregaUncheckedUpdateManyWithoutCriadorInput>
+  }
+
+  export type EntregaScalarWhereInput = {
+    AND?: EntregaScalarWhereInput | EntregaScalarWhereInput[]
+    OR?: EntregaScalarWhereInput[]
+    NOT?: EntregaScalarWhereInput | EntregaScalarWhereInput[]
+    id?: IntFilter<"Entrega"> | number
+    descricao?: StringFilter<"Entrega"> | string
+    origem?: StringFilter<"Entrega"> | string
+    destino?: StringFilter<"Entrega"> | string
+    status?: EnumStatusEntregaFilter<"Entrega"> | $Enums.StatusEntrega
+    createdAt?: DateTimeFilter<"Entrega"> | Date | string
+    updatedAt?: DateTimeFilter<"Entrega"> | Date | string
+    criadorId?: IntNullableFilter<"Entrega"> | number | null
+  }
+
+  export type UsuarioCreateWithoutEntregasInput = {
+    nome: string
+    email: string
+    senha: string
+    papel?: $Enums.Papel
+    criadoEm?: Date | string
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioUncheckedCreateWithoutEntregasInput = {
+    id?: number
+    nome: string
+    email: string
+    senha: string
+    papel?: $Enums.Papel
+    criadoEm?: Date | string
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUsuarioInput
+  }
+
+  export type UsuarioCreateOrConnectWithoutEntregasInput = {
+    where: UsuarioWhereUniqueInput
+    create: XOR<UsuarioCreateWithoutEntregasInput, UsuarioUncheckedCreateWithoutEntregasInput>
+  }
+
   export type EventoEntregaCreateWithoutEntregaInput = {
     dataEvento: string
     descricao: string
@@ -8698,6 +8977,36 @@ export namespace Prisma {
 
   export type EventoEntregaCreateManyEntregaInputEnvelope = {
     data: EventoEntregaCreateManyEntregaInput | EventoEntregaCreateManyEntregaInput[]
+  }
+
+  export type UsuarioUpsertWithoutEntregasInput = {
+    update: XOR<UsuarioUpdateWithoutEntregasInput, UsuarioUncheckedUpdateWithoutEntregasInput>
+    create: XOR<UsuarioCreateWithoutEntregasInput, UsuarioUncheckedCreateWithoutEntregasInput>
+    where?: UsuarioWhereInput
+  }
+
+  export type UsuarioUpdateToOneWithWhereWithoutEntregasInput = {
+    where?: UsuarioWhereInput
+    data: XOR<UsuarioUpdateWithoutEntregasInput, UsuarioUncheckedUpdateWithoutEntregasInput>
+  }
+
+  export type UsuarioUpdateWithoutEntregasInput = {
+    nome?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: StringFieldUpdateOperationsInput | string
+    papel?: EnumPapelFieldUpdateOperationsInput | $Enums.Papel
+    criadoEm?: DateTimeFieldUpdateOperationsInput | Date | string
+    refreshTokens?: RefreshTokenUpdateManyWithoutUsuarioNestedInput
+  }
+
+  export type UsuarioUncheckedUpdateWithoutEntregasInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    nome?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: StringFieldUpdateOperationsInput | string
+    papel?: EnumPapelFieldUpdateOperationsInput | $Enums.Papel
+    criadoEm?: DateTimeFieldUpdateOperationsInput | Date | string
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
   export type EventoEntregaUpsertWithWhereUniqueWithoutEntregaInput = {
@@ -8778,6 +9087,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega
     createdAt?: Date | string
     updatedAt?: Date | string
+    criador?: UsuarioCreateNestedOneWithoutEntregasInput
   }
 
   export type EntregaUncheckedCreateWithoutEventosInput = {
@@ -8788,6 +9098,7 @@ export namespace Prisma {
     status: $Enums.StatusEntrega
     createdAt?: Date | string
     updatedAt?: Date | string
+    criadorId?: number | null
   }
 
   export type EntregaCreateOrConnectWithoutEventosInput = {
@@ -8837,6 +9148,7 @@ export namespace Prisma {
     status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    criador?: UsuarioUpdateOneWithoutEntregasNestedInput
   }
 
   export type EntregaUncheckedUpdateWithoutEventosInput = {
@@ -8847,6 +9159,7 @@ export namespace Prisma {
     status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    criadorId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MotoristaUpsertWithoutEventosInput = {
@@ -8886,6 +9199,16 @@ export namespace Prisma {
     criadoEm?: Date | string
   }
 
+  export type EntregaCreateManyCriadorInput = {
+    id?: number
+    descricao: string
+    origem: string
+    destino: string
+    status: $Enums.StatusEntrega
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type RefreshTokenUpdateWithoutUsuarioInput = {
     token?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8904,6 +9227,37 @@ export namespace Prisma {
     token?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     criadoEm?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EntregaUpdateWithoutCriadorInput = {
+    descricao?: StringFieldUpdateOperationsInput | string
+    origem?: StringFieldUpdateOperationsInput | string
+    destino?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventos?: EventoEntregaUpdateManyWithoutEntregaNestedInput
+  }
+
+  export type EntregaUncheckedUpdateWithoutCriadorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    descricao?: StringFieldUpdateOperationsInput | string
+    origem?: StringFieldUpdateOperationsInput | string
+    destino?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    eventos?: EventoEntregaUncheckedUpdateManyWithoutEntregaNestedInput
+  }
+
+  export type EntregaUncheckedUpdateManyWithoutCriadorInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    descricao?: StringFieldUpdateOperationsInput | string
+    origem?: StringFieldUpdateOperationsInput | string
+    destino?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusEntregaFieldUpdateOperationsInput | $Enums.StatusEntrega
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EventoEntregaCreateManyEntregaInput = {
