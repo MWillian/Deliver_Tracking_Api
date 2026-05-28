@@ -141,7 +141,8 @@ exports.Prisma.EntregaScalarFieldEnum = {
   destino: 'destino',
   status: 'status',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  criadorId: 'criadorId'
 };
 
 exports.Prisma.MotoristaScalarFieldEnum = {

@@ -53,6 +53,7 @@ export class EntregasService{
             origem: dados.origem,
             destino: dados.destino,
             status: 'CRIADA',
+            criadorId: dados.criadorId,
             historico: [historicoInicial]
         };
 

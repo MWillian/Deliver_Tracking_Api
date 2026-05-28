@@ -32,6 +32,7 @@ model Usuario {
   papel         Papel          @default(OPERADOR)
   criadoEm      DateTime       @default(now()) @map("criado_em")
   refreshTokens RefreshToken[]
+  entregas      Entrega[]
 
   @@map("usuarios")
 }
@@ -56,6 +57,9 @@ model Entrega {
   status    StatusEntrega
   createdAt DateTime      @default(now()) @map("created_at")
   updatedAt DateTime      @updatedAt @map("updated_at")
+
+  criadorId Int?     @map("criador_id")
+  criador   Usuario? @relation(fields: [criadorId], references: [id])
 
   eventos EventoEntrega[]
 
