@@ -27,6 +27,7 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 
   - Defina a variável `DATABASE_URL` no arquivo .env
   - Exemplo: `DATABASE_URL="file:./prisma/dev.db"`
+  - Defina a variável `JWT_SECRET` no arquivo .env para a assinatura dos tokens (ex: `JWT_SECRET="sua_chave_secreta"`).
 
 3. Execute as migrations:
 
@@ -53,14 +54,68 @@ Esta API foi desenvolvida para a gestão logística de entregas e motoristas, ap
 - `dotenv`
 - `@prisma/client`
 - `prisma`
+- `jsonwebtoken`
+- `bcrypt` ou equivalente (se aplicável ao AuthService)
+
+## Autenticação via JWT
+
+A API foi atualizada para aumentar a segurança restringindo o acesso através do protocolo de **JSON Web Token (JWT)**.
+Todas as requisições para as rotas da API (`/api/entregas`, `/api/motoristas` e `/api/relatorios`) necessitam de um token JWT válido, que deve ser enviado no cabeçalho (*Header*) da requisição:
+
+`Authorization: Bearer <seu_token_jwt_aqui>`
+
+### Rotas de Autenticação (Abertas)
+
+#### Registrar Usuário
+- **URL:** `/api/auth/registrar` | **Método:** `POST`
+- **Corpo:** `{"nome": "Nome", "email": "admin@teste.com", "senha": "123", "papel": "ADMIN"}` (Dependendo do schema)
+- **Retorno:** Registra o usuário com a senha hasheada.
+
+#### Login
+- **URL:** `/api/auth/login` | **Método:** `POST`
+- **Corpo:** `{"email": "admin@teste.com", "senha": "123"}`
+- **Retorno (200 OK):**
+    ```json
+    {
+      "message": "Login realizado com sucesso",
+      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+    }
+    ```
 
 ## Interface Web e Painel Administrativo
 
-Através do SSR implementado, a aplicação possui um Dashboard acessível pelo navegador. Todas as operações de gestão também podem ser feitas por lá.
+Através do SSR implementado utilizando o EJS, a aplicação possui um Dashboard acessível pelo navegador. Todas as operações de gestão também podem ser feitas por lá através de uma interface amigável.
 
 - **Acesso ao Painel:** Navegue para a rota `/painel` no seu navegador (exemplo: `http://localhost:3000/painel`).
-        
-##  Documentação da API
+
+### Documentação das Rotas do `/painel`
+
+A área visual do painel é dividida em diferentes módulos para gerir facilmente a logística. 
+
+#### Dashboard Inicial e Relatórios
+- **`GET /painel/`**: Retorna a página inicial (dashboard principal).
+- **`GET /painel/relatorios`**: Exibe o Dashboard completo de relatórios e métricas de desempenho.
+- **`GET /painel/relatorios/entregas-por-status`**: Visualização das métricas de entrega distribuídas por status atual.
+- **`GET /painel/relatorios/motoristas-ativos`**: Visualização dos motoristas em operação e quantidade de entregas em aberto.
+
+#### Gestão de Entregas
+- **`GET /painel/entregas`**: Interface para listar todas as entregas (suporta filtros de listagem e visualização de status).
+- **`GET /painel/entregas/novo`**: Formulário web (EJS) para criar a solicitação de uma nova entrega.
+- **`POST /painel/entregas`**: Ação de formulário que insere e persiste uma nova entrega.
+- **`GET /painel/entregas/:id`**: Página de detalhes exclusivos de uma entrega específica contendo todo o histórico de eventos.
+- **`GET /painel/atribuir-motorista`**: Tela em formulário para associar rapidamente um veículo/motorista em atividade à uma entrega `CRIADA`.
+- **`POST /painel/atribuir-motorista`**: Ação que efetiva a atribuição informada no formulário.
+- **`PATCH /painel/entregas/:id/avancar`**: Ação rápida (geralmente executada via botão no painel) que avança o status logístico da entrega.
+- **`PATCH /painel/entregas/:id/cancelar`**: Ação para cancelar a entrega atual desde que viável pela regra de negócios.
+
+#### Gestão de Motoristas
+- **`GET /painel/motoristas`**: Interface completa de listagem de motoristas (Ativos e Inativos).
+- **`GET /painel/motoristas/novo`**: Formulário web (EJS) de cadastro para adicionar novos motoristas.
+- **`POST /painel/motoristas`**: Ação de formulário que persiste o cadastro.
+- **`GET /painel/motoristas/:id`**: Interface de visualização detalhada de um motorista específico.
+- **`GET /painel/motoristas/:id/inativar`**: Ação via interface que realiza a inativação ("Sotf delete") de um motorista.
+
+##  Documentação da API Rest
 
 **Base URL:** `/api`
 
