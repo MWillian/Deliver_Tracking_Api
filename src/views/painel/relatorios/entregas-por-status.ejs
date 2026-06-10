@@ -6,7 +6,11 @@
     <a href="/painel/relatorios" class="btn btn-link">&larr; Voltar ao Dashboard</a>
   </div>
 
-  <section class="detail-section">
+  <div id="loading-state" style="text-align: center; padding: 2rem;">
+    <p>Calculando relatório de entregas...</p>
+  </div>
+
+  <section id="content-state" class="detail-section" style="display: none;">
     <h2>Resumo</h2>
     <div class="data-grid" style="grid-template-columns: 1.5fr 1fr 1fr;">
       <div class="data-grid-header">
@@ -14,30 +18,30 @@
         <div class="data-grid-cell-header">Quantidade</div>
         <div class="data-grid-cell-header">Percentual</div>
       </div>
-      
+
       <div class="data-grid-row">
         <div class="data-grid-cell">CRIADA</div>
-        <div class="data-grid-cell"><%= entregasPorStatus.CRIADA %></div>
-        <div class="data-grid-cell"><%= total > 0 ? ((entregasPorStatus.CRIADA / total) * 100).toFixed(2) : 0 %>%</div>
+        <div id="qtd-criada" class="data-grid-cell">-</div>
+        <div id="pct-criada" class="data-grid-cell">-</div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell">EM TRÂNSITO</div>
-        <div class="data-grid-cell"><%= entregasPorStatus.EM_TRANSITO %></div>
-        <div class="data-grid-cell"><%= total > 0 ? ((entregasPorStatus.EM_TRANSITO / total) * 100).toFixed(2) : 0 %>%</div>
+        <div id="qtd-em_transito" class="data-grid-cell">-</div>
+        <div id="pct-em_transito" class="data-grid-cell">-</div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell">ENTREGUE</div>
-        <div class="data-grid-cell"><%= entregasPorStatus.ENTREGUE %></div>
-        <div class="data-grid-cell"><%= total > 0 ? ((entregasPorStatus.ENTREGUE / total) * 100).toFixed(2) : 0 %>%</div>
+        <div id="qtd-entregue" class="data-grid-cell">-</div>
+        <div id="pct-entregue" class="data-grid-cell">-</div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell">CANCELADA</div>
-        <div class="data-grid-cell"><%= entregasPorStatus.CANCELADA %></div>
-        <div class="data-grid-cell"><%= total > 0 ? ((entregasPorStatus.CANCELADA / total) * 100).toFixed(2) : 0 %>%</div>
+        <div id="qtd-cancelada" class="data-grid-cell">-</div>
+        <div id="pct-cancelada" class="data-grid-cell">-</div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;">TOTAL</div>
-        <div class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;"><%= total %></div>
+        <div id="qtd-total" class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;">-</div>
         <div class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;">100.00%</div>
       </div>
     </div>
@@ -46,18 +50,65 @@
       <h3 style="margin-bottom: 20px;">Ações Rápidas</h3>
       <div class="detail-grid">
         <div class="detail-item">
-          <a href="/painel/entregas?status=CRIADA" class="btn btn-outline" style="width: 100%; justify-content: center; text-align: center;">Entregas Criadas</a>
+          <a href="/painel/entregas?status=CRIADA" class="btn btn-outline"
+            style="width: 100%; justify-content: center; text-align: center;">Entregas Criadas</a>
         </div>
         <div class="detail-item">
-          <a href="/painel/entregas?status=EM_TRANSITO" class="btn btn-outline" style="width: 100%; justify-content: center; text-align: center;">Entregas em Trânsito</a>
+          <a href="/painel/entregas?status=EM_TRANSITO" class="btn btn-outline"
+            style="width: 100%; justify-content: center; text-align: center;">Entregas em Trânsito</a>
         </div>
         <div class="detail-item">
-          <a href="/painel/entregas?status=ENTREGUE" class="btn btn-outline" style="width: 100%; justify-content: center; text-align: center;">Entregas Entregues</a>
+          <a href="/painel/entregas?status=ENTREGUE" class="btn btn-outline"
+            style="width: 100%; justify-content: center; text-align: center;">Entregas Entregues</a>
         </div>
         <div class="detail-item">
-          <a href="/painel/entregas?status=CANCELADA" class="btn btn-outline" style="width: 100%; justify-content: center; text-align: center;">Entregas Canceladas</a>
+          <a href="/painel/entregas?status=CANCELADA" class="btn btn-outline"
+            style="width: 100%; justify-content: center; text-align: center;">Entregas Canceladas</a>
         </div>
       </div>
     </div>
   </section>
 </div>
+
+<%- include('../../partials/footer') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const loadingState = document.getElementById('loading-state');
+  const contentState = document.getElementById('content-state');
+
+  try {
+    const response = await api.get('/relatorios/entregas-por-status');
+    const statusData = response.data;
+
+    const qtdCriada = statusData.CRIADA || 0;
+    const qtdEmTransito = statusData.EM_TRANSITO || 0;
+    const qtdEntregue = statusData.ENTREGUE || 0;
+    const qtdCancelada = statusData.CANCELADA || 0;
+
+    const total = qtdCriada + qtdEmTransito + qtdEntregue + qtdCancelada;
+
+    const calcularPercentual = (valor) => {
+      if (total === 0) return '0.00%';
+      return ((valor / total) * 100).toFixed(2) + '%';
+    };
+
+    document.getElementById('qtd-criada').textContent = qtdCriada;
+    document.getElementById('qtd-em_transito').textContent = qtdEmTransito;
+    document.getElementById('qtd-entregue').textContent = qtdEntregue;
+    document.getElementById('qtd-cancelada').textContent = qtdCancelada;
+    document.getElementById('qtd-total').textContent = total;
+
+    document.getElementById('pct-criada').textContent = calcularPercentual(qtdCriada);
+    document.getElementById('pct-em_transito').textContent = calcularPercentual(qtdEmTransito);
+    document.getElementById('pct-entregue').textContent = calcularPercentual(qtdEntregue);
+    document.getElementById('pct-cancelada').textContent = calcularPercentual(qtdCancelada);
+
+    loadingState.style.display = 'none';
+    contentState.style.display = 'block';
+
+  } catch (erro) {
+    loadingState.innerHTML = '<p class="alert alert-danger" style="color: red;">Erro ao gerar relatório. Tente novamente mais tarde.</p>';
+  }
+});
+</script>

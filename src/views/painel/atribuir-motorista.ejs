@@ -6,62 +6,136 @@
     <a href="/painel" class="btn btn-link">&larr; Voltar</a>
   </div>
 
-  <% if (typeof sucesso !== 'undefined' && sucesso) { %>
-    <div class="alert alert-success">
-      <p><%= sucesso %></p>
-    </div>
-  <% } %>
-
-  <% if (typeof erro !== 'undefined' && erro) { %>
-    <div class="alert alert-danger">
-      <p><%= erro %></p>
-    </div>
-  <% } %>
+  <div id="alert-container" class="alert" style="display: none;">
+    <p id="alert-message"></p>
+  </div>
 
   <div class="form-wrapper">
     <section class="detail-card">
-      <form method="POST" action="/painel/atribuir-motorista" class="form-container">
+      <form id="form-atribuir" class="form-container">
         <fieldset class="driver-assign-wrapper" style="border: none; padding: 0;">
-          <legend class="detail-label" style="margin-bottom: 20px; font-size: 16px; font-weight: bold; color: var(--text-main);">Selecione a Entrega e o Motorista</legend>
+          <legend class="detail-label" style="margin-bottom: 20px; font-size: 16px; font-weight: bold; color: var(--text-main);">
+            Selecione a Entrega e o Motorista
+          </legend>
 
           <div class="form-group">
-            <label for="entregaId" class="detail-label">Entrega:</label>
+            <label for="entregaId" class="detail-label">Entrega (Apenas status CRIADA):</label>
             <select id="entregaId" name="entregaId" required class="form-input">
-              <option value="">-- Selecione uma entrega --</option>
-              <% if (entregas && entregas.length > 0) { %>
-                <% entregas.forEach(entrega => { %>
-                  <option value="<%= entrega.id %>">
-                    ID <%= entrega.id %> - <%= entrega.descricao %> (Status: <%= entrega.status %>)
-                  </option>
-                <% }); %>
-              <% } else { %>
-                <option value="" disabled>Nenhuma entrega disponível</option>
-              <% } %>
+              <option value="">Carregando entregas...</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="motoristaId" class="detail-label">Motorista:</label>
+            <label for="motoristaId" class="detail-label">Motorista (Apenas ATIVOS):</label>
             <select id="motoristaId" name="motoristaId" required class="form-input">
-              <option value="">-- Selecione um motorista --</option>
-              <% if (motoristas && motoristas.length > 0) { %>
-                <% motoristas.forEach(motorista => { %>
-                  <option value="<%= motorista.id %>">
-                    <%= motorista.nome %> (Placa: <%= motorista.placaVeiculo %>, Status: <%= motorista.status %>)
-                  </option>
-                <% }); %>
-              <% } else { %>
-                <option value="" disabled>Nenhum motorista disponível</option>
-              <% } %>
+              <option value="">Carregando motoristas...</option>
             </select>
           </div>
 
           <div class="form-actions">
             <a href="/painel" class="btn btn-outline">Cancelar</a>
-            <button type="submit" class="btn btn-primary">Atribuir</button>
+            <button type="submit" id="btn-submit" class="btn btn-primary" disabled>Atribuir</button>
           </div>
         </fieldset>
       </form>
     </section>
   </div>
 </div>
+
+<%- include('../partials/footer') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('form-atribuir');
+  const selEntrega = document.getElementById('entregaId');
+  const selMotorista = document.getElementById('motoristaId');
+  const btnSubmit = document.getElementById('btn-submit');
+  
+  const alertContainer = document.getElementById('alert-container');
+  const alertMessage = document.getElementById('alert-message');
+
+  const mostrarAlerta = (mensagem, tipo = 'success') => {
+    alertContainer.className = `alert alert-${tipo}`;
+    alertMessage.textContent = mensagem;
+    alertContainer.style.display = 'block';
+  };
+
+  const carregarDados = async () => {
+    try {
+      const [resEntregas, resMotoristas] = await Promise.all([
+        api.get('/entregas', { params: { status: 'CRIADA', limit: 50 } }),
+        api.get('/motoristas', { params: { status: 'ATIVO' } })
+      ]);
+
+      const entregas = resEntregas.data.data; 
+      const motoristas = resMotoristas.data;
+
+      selEntrega.innerHTML = ''; 
+      if (entregas.length === 0) {
+        selEntrega.innerHTML = '<option value="" disabled selected>Nenhuma entrega recém criada disponível</option>';
+      } else {
+        selEntrega.innerHTML = '<option value="" selected>-- Selecione uma entrega --</option>';
+        entregas.forEach(entrega => {
+          const opt = document.createElement('option');
+          opt.value = entrega.id;
+          opt.textContent = `ID ${entrega.id} - ${entrega.descricao}`;
+          selEntrega.appendChild(opt);
+        });
+      }
+
+      selMotorista.innerHTML = '';
+      if (motoristas.length === 0) {
+        selMotorista.innerHTML = '<option value="" disabled selected>Nenhum motorista ativo disponível</option>';
+      } else {
+        selMotorista.innerHTML = '<option value="" selected>-- Selecione um motorista --</option>';
+        motoristas.forEach(motorista => {
+          const opt = document.createElement('option');
+          opt.value = motorista.id;
+          opt.textContent = `${motorista.nome} (Placa: ${motorista.placaVeiculo})`;
+          selMotorista.appendChild(opt);
+        });
+      }
+
+      if (entregas.length > 0 && motoristas.length > 0) {
+        btnSubmit.disabled = false;
+      }
+
+    } catch (erro) {
+      mostrarAlerta('Erro ao carregar opções. Tente recarregar a página.', 'danger');
+      selEntrega.innerHTML = '<option value="" disabled>Erro de carregamento</option>';
+      selMotorista.innerHTML = '<option value="" disabled>Erro de carregamento</option>';
+    }
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const entregaId = selEntrega.value;
+    const motoristaId = selMotorista.value;
+
+    if (!entregaId || !motoristaId) {
+      mostrarAlerta('Por favor, selecione a entrega e o motorista.', 'danger');
+      return;
+    }
+
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = 'Atribuindo...';
+
+    try {
+      await api.patch(`/entregas/${entregaId}/atribuir`, { motoristaId: Number(motoristaId) });
+      
+      mostrarAlerta('Motorista atribuído com sucesso!', 'success');
+      
+      btnSubmit.disabled = true; 
+      await carregarDados(); 
+      
+    } catch (erro) {
+      mostrarAlerta(erro.response?.data?.erro || 'Erro ao atribuir motorista.', 'danger');
+    } finally {
+      btnSubmit.textContent = 'Atribuir';
+    }
+  });
+
+  carregarDados();
+});
+</script>

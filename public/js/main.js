@@ -1,13 +1,13 @@
 const api = axios.create({
   baseURL: '/api',
 });
-axios.interceptors.request.use(config => {
+api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-axios.interceptors.response.use(
+api.interceptors.response.use(
   resposta => resposta,
   erro => {
     if (erro.response?.status === 401) {

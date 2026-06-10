@@ -81,7 +81,6 @@ export class MotoristasService{
         return listaEntregas;
     }
     
-    // MÉTODOS AUXILIARES
     validarCpf(cpf){
         const cleanedCpf = cpf.replace(/\./g, '').replace(/-/g, '');
 
