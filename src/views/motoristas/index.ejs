@@ -1,84 +1,182 @@
 <%- include('../partials/header', { titulo: 'Listagem de Motoristas' }) %>
 
-  <div class="deliver-list-container">
-    <div class="page-header">
-      <h1>Listagem de Motoristas</h1>
-      <a href="/painel/motoristas/novo" class="btn btn-primary">+ Novo Motorista</a>
+<div class="deliver-list-container">
+  <div class="page-header">
+    <h1>Listagem de Motoristas</h1>
+    <a href="/painel/motoristas/novo" class="btn btn-primary">+ Novo Motorista</a>
+  </div>
+
+  <div id="alert-container" style="display: none;" class="alert">
+    <p id="alert-message"></p>
+  </div>
+
+  <form id="filter-form" class="filter-bar">
+    <div class="filter-group">
+      <label for="status">Filtrar por status:</label>
+      <select id="status" name="status">
+        <option value="">Todos</option>
+        <option value="ATIVO">ATIVO</option>
+        <option value="INATIVO">INATIVO</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-secondary">Filtrar</button>
+    <button type="button" id="btn-limpar" class="btn btn-link">Limpar</button>
+  </form>
+
+  <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
+    <div class="data-grid-header">
+      <div class="data-grid-cell-header">ID</div>
+      <div class="data-grid-cell-header">Nome</div>
+      <div class="data-grid-cell-header">CPF</div>
+      <div class="data-grid-cell-header">Placa</div>
+      <div class="data-grid-cell-header">Status</div>
+      <div class="data-grid-cell-header">Ações</div>
+      <div class="data-grid-cell-header">Desativar</div>
     </div>
 
-    <% if (typeof sucesso !== 'undefined' && sucesso) { %>
-      <div class="alert alert-success">
-        <p><%= sucesso %></p>
+    <div id="grid-body" style="display: contents;">
+      <div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px;">
+        Carregando motoristas...
       </div>
-    <% } %>
-
-    <% if (typeof erro !== 'undefined' && erro) { %>
-      <div class="alert alert-danger">
-        <p><%= erro %></p>
-      </div>
-    <% } %>
-    
-        <form method="GET" action="/painel/motoristas" class="filter-bar">
-          <div class="filter-group">
-            <label for="status">Filtrar por status:</label>
-            <select id="status" name="status">
-              <option value="" <%=!statusSelecionado ? 'selected' : '' %>>Todos</option>
-              <option value="ATIVO" <%=statusSelecionado==='ATIVO' ? 'selected' : '' %>>ATIVO</option>
-              <option value="INATIVO" <%=statusSelecionado==='INATIVO' ? 'selected' : '' %>>INATIVO</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-secondary">Filtrar</button>
-          <a href="/painel/motoristas" class="btn btn-link">Limpar</a>
-        </form>
-
-        <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
-          <div class="data-grid-header">
-            <div class="data-grid-cell-header">ID</div>
-            <div class="data-grid-cell-header">Nome</div>
-            <div class="data-grid-cell-header">CPF</div>
-            <div class="data-grid-cell-header">Placa</div>
-            <div class="data-grid-cell-header">Status</div>
-            <div class="data-grid-cell-header">Ações</div>
-            <div class="data-grid-cell-header">Desativar</div>
-          </div>
-
-          <% if (motoristas && motoristas.length> 0) { %>
-            <% motoristas.forEach(motorista=> { %>
-              <div class="data-grid-row">
-                <div class="data-grid-cell"><strong>
-                    <%= motorista.id %>
-                  </strong></div>
-                <div class="data-grid-cell">
-                  <%= motorista.nome %>
-                </div>
-                <div class="data-grid-cell">
-                  <%= motorista.cpf %>
-                </div>
-                <div class="data-grid-cell">
-                  <%= motorista.placaVeiculo %>
-                </div>
-                <div class="data-grid-cell">
-                  <span class="badge badge-<%= motorista.status.toLowerCase() %>">
-                    <%= motorista.status %>
-                  </span>
-                </div>
-                <div class="data-grid-cell">
-                  <a href="/painel/motoristas/<%= motorista.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
-                </div>
-                <div class="data-grid-cell">
-                  <a href="/painel/motoristas/<%= motorista.id %>/inativar"
-                    class="btn btn-sm btn-outline">Desativar</a>
-                </div>
-              </div>
-              <% }); %>
-                <% } else { %>
-                  <div class="data-grid-row"
-                    style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: var(--text-muted);">
-                    Nenhum motorista encontrado
-                  </div>
-                  <% } %>
-        </div>
-        <div class="footer-actions" style="margin-top: 1.5rem;">
-          <a href="/painel" class="btn btn-link">&larr; Voltar ao Painel</a>
-        </div>
+    </div>
   </div>
+
+  <div class="footer-actions" style="margin-top: 1.5rem;">
+    <a href="/painel" class="btn btn-link">&larr; Voltar ao Painel</a>
+  </div>
+</div>
+
+<template id="row-template">
+  <div class="data-grid-row">
+    <div class="data-grid-cell"><strong class="cell-id"></strong></div>
+    <div class="data-grid-cell cell-nome"></div>
+    <div class="data-grid-cell cell-cpf"></div>
+    <div class="data-grid-cell cell-placa"></div>
+    <div class="data-grid-cell">
+      <span class="badge cell-status"></span>
+    </div>
+    <div class="data-grid-cell">
+      <a href="#" class="btn btn-sm btn-outline cell-link-detalhes">Ver Detalhes</a>
+    </div>
+    <div class="data-grid-cell">
+      <button class="btn btn-sm btn-danger cell-btn-inativar">Desativar</button>
+    </div>
+  </div>
+</template>
+
+<%- include('../partials/footer') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const gridBody = document.getElementById('grid-body');
+  const templateRow = document.getElementById('row-template');
+  const filterForm = document.getElementById('filter-form');
+  const statusSelect = document.getElementById('status');
+  const btnLimpar = document.getElementById('btn-limpar');
+  
+  const alertContainer = document.getElementById('alert-container');
+  const alertMessage = document.getElementById('alert-message');
+
+  const mostrarAlerta = (mensagem, tipo = 'success') => {
+    alertContainer.className = `alert alert-${tipo}`;
+    alertMessage.textContent = mensagem;
+    alertContainer.style.display = 'block';
+  };
+
+  const urlParamsInit = new URLSearchParams(window.location.search);
+  if (urlParamsInit.has('sucesso')) {
+    mostrarAlerta(urlParamsInit.get('sucesso'), 'success');
+    const novaUrl = new URL(window.location);
+    novaUrl.searchParams.delete('sucesso');
+    window.history.replaceState({}, document.title, novaUrl);
+  }
+
+  const buscarMotoristas = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status') || '';
+    statusSelect.value = status;
+
+    gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px;">Carregando...</div>`;
+
+    try {
+      const response = await api.get('/motoristas', { params: { status } });
+      const motoristas = response.data; 
+
+      gridBody.innerHTML = '';
+
+      if (!motoristas || motoristas.length === 0) {
+        gridBody.innerHTML = `
+          <div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: var(--text-muted);">
+            Nenhum motorista encontrado
+          </div>`;
+        return;
+      }
+
+      motoristas.forEach(motorista => {
+        const clone = templateRow.content.cloneNode(true);
+        
+        clone.querySelector('.cell-id').textContent = motorista.id;
+        clone.querySelector('.cell-nome').textContent = motorista.nome;
+        clone.querySelector('.cell-cpf').textContent = motorista.cpf;
+        clone.querySelector('.cell-placa').textContent = motorista.placaVeiculo;
+        
+        const badge = clone.querySelector('.cell-status');
+        badge.textContent = motorista.status;
+        badge.classList.add(`badge-${motorista.status.toLowerCase()}`);
+
+        clone.querySelector('.cell-link-detalhes').href = `/painel/motoristas/${motorista.id}`;
+
+        const btnInativar = clone.querySelector('.cell-btn-inativar');
+        if (motorista.status === 'INATIVO') {
+          btnInativar.disabled = true;
+          btnInativar.classList.replace('btn-danger', 'btn-outline');
+        } else {
+          btnInativar.onclick = () => inativarMotorista(motorista.id, motorista.nome);
+        }
+
+        gridBody.appendChild(clone);
+      });
+
+    } catch (erro) {
+      gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: red;">Erro ao carregar os dados.</div>`;
+    }
+  };
+
+  const inativarMotorista = async (id, nome) => {
+    if (!confirm(`Tem certeza que deseja inativar o motorista ${nome}?`)) return;
+
+    try {
+      await api.patch(`/motoristas/${id}/inativar`);
+      mostrarAlerta(`Motorista ${nome} inativado com sucesso.`, 'success');
+      buscarMotoristas(); 
+    } catch (erro) {
+      mostrarAlerta(erro.response?.data?.erro || 'Erro ao inativar motorista.', 'danger');
+    }
+  };
+
+  const navegarPara = (status) => {
+    const url = new URL(window.location);
+    if (status) {
+      url.searchParams.set('status', status);
+    } else {
+      url.searchParams.delete('status');
+    }
+    window.history.pushState({}, '', url);
+    buscarMotoristas();
+  };
+
+  filterForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    navegarPara(statusSelect.value);
+  });
+
+  btnLimpar.addEventListener('click', () => {
+    statusSelect.value = '';
+    navegarPara('');
+  });
+
+  window.addEventListener('popstate', buscarMotoristas);
+
+  buscarMotoristas();
+});
+</script>
