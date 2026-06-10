@@ -76,25 +76,7 @@ export class PainelEntregasController {
     }
 
     async exibirDetalhe(req, res, next) {
-        try {
-            const id = Number(req.params.id);
-
-            if (!Number.isInteger(id) || id < 1) {
-                throw new AppError('ID inválido.', 400);
-            }
-
-            const entrega = await this.service.buscarPorId(id);
-            const historico = await this.service.obterHistorico(id);
-
-            res.render('entregas/detalhe', {
-                entrega,
-                historico: Array.isArray(historico) ? historico : [],
-                sucesso: req.query.sucesso || '',
-                erro: req.query.erro || ''
-            });
-        } catch (err) {
-            next(err);
-        }
+        res.render('entregas/detalhe');
     }
 
     async avancarStatus(req, res, next) {

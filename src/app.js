@@ -9,6 +9,7 @@ import { painelRouter } from '../src/routes/painel.router.js';
 import methodOverride from 'method-override';
 import { middlewareDeErros } from '../src/middlewares/erros.middlewares.js';
 
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 
@@ -49,4 +50,4 @@ app.get('/logout', (req, res) => {
 app.use('/painel', painelRouter);
 app.use(middlewareDeErros);
 
-export default app; 
+export default app;
