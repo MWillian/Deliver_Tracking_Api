@@ -1,6 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 import bcrypt from 'bcrypt';
-import { gerarAccessToken } from '../utils/jwt.js';
+import { gerarAccessToken, gerarRefreshToken } from '../utils/jwt.js';
 
 export class AuthService {
     constructor(usuariosRepository) {
@@ -12,6 +12,10 @@ export class AuthService {
 
         if (!nome || !email || !senha) {
             throw new AppError('Nome, e-mail e senha são obrigatórios', 400);
+        }
+        
+        if (senha.length < 8) {
+            throw new AppError('A senha deve ter no mínimo 8 caracteres', 400);
         }
 
         const usuarioExistente = await this.usuariosRepository.buscarPorEmail(email);
@@ -55,9 +59,11 @@ export class AuthService {
         };
 
         const accessToken = gerarAccessToken(payload);
+        const refreshToken = gerarRefreshToken ? gerarRefreshToken(payload) : 'mock-refresh-token';
 
         return {
             accessToken,
+            refreshToken,
             usuario: payload
         };
     }
