@@ -1,117 +1,118 @@
 <%- include('../partials/header', { titulo: 'Listagem de Entregas' }) %>
 
-<div class="deliver-list-container">
-  <div class="page-header">
-    <h1>Listagem de Entregas</h1>
-    <a href="/painel/entregas/novo" class="btn btn-primary">+ Nova Entrega</a>
-  </div>
-
-  <div id="alert-container" class="alert alert-success" style="display: none;">
-    <p id="alert-message"></p>
-  </div>
-
-  <form id="filter-form" class="filter-bar">
-    <div class="filter-group">
-      <label for="status">Filtrar por status:</label>
-      <select id="status" name="status">
-        <option value="">Todos</option>
-        <option value="CRIADA">CRIADA</option>
-        <option value="EM_TRANSITO">EM TRÂNSITO</option>
-        <option value="ENTREGUE">ENTREGUE</option>
-        <option value="CANCELADA">CANCELADA</option>
-      </select>
-    </div>
-    <button type="submit" class="btn btn-secondary">Filtrar</button>
-    <button type="button" id="btn-limpar" class="btn btn-link">Limpar</button>
-  </form>
-
-  <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
-    <div class="data-grid-header">
-      <div class="data-grid-cell-header">ID</div>
-      <div class="data-grid-cell-header">Descrição</div>
-      <div class="data-grid-cell-header">Origem</div>
-      <div class="data-grid-cell-header">Destino</div>
-      <div class="data-grid-cell-header">Status</div>
-      <div class="data-grid-cell-header">Data Criação</div>
-      <div class="data-grid-cell-header">Ações</div>
+  <div class="deliver-list-container">
+    <div class="page-header">
+      <h1>Listagem de Entregas</h1>
+      <a href="/painel/entregas/novo" class="btn btn-primary">+ Nova Entrega</a>
     </div>
 
-    <div id="grid-body" style="display: contents;">
-      <div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px;">
-        Carregando entregas...
+    <div id="alert-container" class="alert alert-success" style="display: none;">
+      <p id="alert-message"></p>
+    </div>
+
+    <form id="filter-form" class="filter-bar">
+      <div class="filter-group">
+        <label for="status">Filtrar por status:</label>
+        <select id="status" name="status">
+          <option value="">Todos</option>
+          <option value="CRIADA">CRIADA</option>
+          <option value="EM_TRANSITO">EM TRÂNSITO</option>
+          <option value="ENTREGUE">ENTREGUE</option>
+          <option value="CANCELADA">CANCELADA</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-secondary">Filtrar</button>
+      <button type="button" id="btn-limpar" class="btn btn-link">Limpar</button>
+    </form>
+
+    <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;" data-testid="tabela-entregas">
+      <div class="data-grid-header">
+        <div class="data-grid-cell-header">ID</div>
+        <div class="data-grid-cell-header">Descrição</div>
+        <div class="data-grid-cell-header">Origem</div>
+        <div class="data-grid-cell-header">Destino</div>
+        <div class="data-grid-cell-header">Status</div>
+        <div class="data-grid-cell-header">Data Criação</div>
+        <div class="data-grid-cell-header">Ações</div>
+      </div>
+
+      <div id="grid-body" style="display: contents;">
+        <div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px;">
+          Carregando entregas...
+        </div>
       </div>
     </div>
+
+    <div id="pagination-container" class="pagination"></div>
+
+    <div class="footer-actions">
+      <a href="/painel" class="btn btn-link">&larr; Voltar ao Painel</a>
+    </div>
   </div>
 
-  <div id="pagination-container" class="pagination"></div>
+  <%- include('../partials/footer') %>
 
-  <div class="footer-actions">
-    <a href="/painel" class="btn btn-link">&larr; Voltar ao Painel</a>
-  </div>
-</div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const gridBody = document.getElementById('grid-body');
+        const paginationContainer = document.getElementById('pagination-container');
+        const filterForm = document.getElementById('filter-form');
+        const statusSelect = document.getElementById('status');
+        const btnLimpar = document.getElementById('btn-limpar');
 
-<%- include('../partials/footer') %>
+        const alertContainer = document.getElementById('alert-container');
+        const alertMessage = document.getElementById('alert-message');
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const gridBody = document.getElementById('grid-body');
-  const paginationContainer = document.getElementById('pagination-container');
-  const filterForm = document.getElementById('filter-form');
-  const statusSelect = document.getElementById('status');
-  const btnLimpar = document.getElementById('btn-limpar');
-  
-  const alertContainer = document.getElementById('alert-container');
-  const alertMessage = document.getElementById('alert-message');
+        const urlParamsInit = new URLSearchParams(window.location.search);
+        if (urlParamsInit.has('sucesso')) {
+          alertMessage.textContent = urlParamsInit.get('sucesso');
+          alertContainer.style.display = 'block';
 
-  const urlParamsInit = new URLSearchParams(window.location.search);
-  if (urlParamsInit.has('sucesso')) {
-    alertMessage.textContent = urlParamsInit.get('sucesso');
-    alertContainer.style.display = 'block';
-    
-    const novaUrl = new URL(window.location);
-    novaUrl.searchParams.delete('sucesso');
-    window.history.replaceState({}, document.title, novaUrl);
-  }
+          const novaUrl = new URL(window.location);
+          novaUrl.searchParams.delete('sucesso');
+          window.history.replaceState({}, document.title, novaUrl);
+        }
 
-  const buscarEntregas = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const page = params.get('page') || 1;
-    const status = params.get('status') || '';
+        const buscarEntregas = async () => {
+          const params = new URLSearchParams(window.location.search);
+          const page = params.get('page') || 1;
+          const status = params.get('status') || '';
 
-    statusSelect.value = status;
+          statusSelect.value = status;
 
-    gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px;">Carregando...</div>`;
+          gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px;">Carregando...</div>`;
 
-    try {
-      const response = await api.get('/entregas', { params: { page, status } });
-      const { data, totalPages, page: currentPage } = response.data;
+          try {
+            const response = await api.get('/entregas', { params: { page, status } });
+            const { data, totalPages, page: currentPage } = response.data;
 
-      renderizarGrid(data);
-      renderizarPaginacao(currentPage, totalPages, status);
-    } catch (erro) {
-      gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: red;">Erro ao carregar os dados.</div>`;
-    }
-  };
+            renderizarGrid(data);
+            renderizarPaginacao(currentPage, totalPages, status);
+          } catch (erro) {
+            gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: red;">Erro ao carregar os dados.</div>`;
+          }
+        };
 
-  const renderizarGrid = (entregas) => {
-    gridBody.innerHTML = ''; 
+        const renderizarGrid = (entregas) => {
+          gridBody.innerHTML = '';
 
-    if (!entregas || entregas.length === 0) {
-      gridBody.innerHTML = `
+          if (!entregas || entregas.length === 0) {
+            gridBody.innerHTML = `
         <div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: var(--text-muted);">
           Nenhuma entrega encontrada
         </div>`;
-      return;
-    }
+            return;
+          }
 
-    entregas.forEach(entrega => {
-      const dataCriacao = entrega.createdAt ? new Date(entrega.createdAt).toLocaleDateString('pt-BR') : '-';
-      const statusFormatado = entrega.status.replace('_', ' ');
-      const statusClasse = entrega.status.toLowerCase();
+          entregas.forEach(entrega => {
+            const dataCriacao = entrega.createdAt ? new Date(entrega.createdAt).toLocaleDateString('pt-BR') : '-';
+            const statusFormatado = entrega.status.replace('_', ' ');
+            const statusClasse = entrega.status.toLowerCase();
 
-      const row = document.createElement('div');
-      row.className = 'data-grid-row';
-      row.innerHTML = `
+            const row = document.createElement('div');
+            row.className = 'data-grid-row';
+            row.setAttribute('data-testid', 'linha-entrega');
+            row.innerHTML = `
         <div class="data-grid-cell"><strong>${entrega.id}</strong></div>
         <div class="data-grid-cell">${entrega.descricao}</div>
         <div class="data-grid-cell">${entrega.origem}</div>
@@ -124,60 +125,60 @@ document.addEventListener('DOMContentLoaded', () => {
           <a href="/painel/entregas/${entrega.id}" class="btn btn-sm btn-outline">Ver Detalhes</a>
         </div>
       `;
-      gridBody.appendChild(row);
-    });
-  };
+            gridBody.appendChild(row);
+          });
+        };
 
-  const renderizarPaginacao = (currentPage, totalPages, status) => {
-    paginationContainer.innerHTML = '';
-    
-    if (currentPage > 1) {
-      const btnAnt = document.createElement('button');
-      btnAnt.className = 'btn btn-sm btn-outline';
-      btnAnt.textContent = 'Anterior';
-      btnAnt.onclick = () => navegarPara(currentPage - 1, status);
-      paginationContainer.appendChild(btnAnt);
-    }
+        const renderizarPaginacao = (currentPage, totalPages, status) => {
+          paginationContainer.innerHTML = '';
 
-    const info = document.createElement('span');
-    info.className = 'page-info';
-    info.innerHTML = `Página <strong>${currentPage}</strong> de ${totalPages}`;
-    paginationContainer.appendChild(info);
+          if (currentPage > 1) {
+            const btnAnt = document.createElement('button');
+            btnAnt.className = 'btn btn-sm btn-outline';
+            btnAnt.textContent = 'Anterior';
+            btnAnt.onclick = () => navegarPara(currentPage - 1, status);
+            paginationContainer.appendChild(btnAnt);
+          }
 
-    if (currentPage < totalPages) {
-      const btnProx = document.createElement('button');
-      btnProx.className = 'btn btn-sm btn-outline';
-      btnProx.textContent = 'Próxima';
-      btnProx.onclick = () => navegarPara(currentPage + 1, status);
-      paginationContainer.appendChild(btnProx);
-    }
-  };
+          const info = document.createElement('span');
+          info.className = 'page-info';
+          info.innerHTML = `Página <strong>${currentPage}</strong> de ${totalPages}`;
+          paginationContainer.appendChild(info);
 
-  const navegarPara = (page, status) => {
-    const url = new URL(window.location);
-    url.searchParams.set('page', page);
-    if (status) {
-      url.searchParams.set('status', status);
-    } else {
-      url.searchParams.delete('status');
-    }
-    
-    window.history.pushState({}, '', url); 
-    buscarEntregas(); 
-  };
+          if (currentPage < totalPages) {
+            const btnProx = document.createElement('button');
+            btnProx.className = 'btn btn-sm btn-outline';
+            btnProx.textContent = 'Próxima';
+            btnProx.onclick = () => navegarPara(currentPage + 1, status);
+            paginationContainer.appendChild(btnProx);
+          }
+        };
 
-  filterForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    navegarPara(1, statusSelect.value); 
-  });
+        const navegarPara = (page, status) => {
+          const url = new URL(window.location);
+          url.searchParams.set('page', page);
+          if (status) {
+            url.searchParams.set('status', status);
+          } else {
+            url.searchParams.delete('status');
+          }
 
-  btnLimpar.addEventListener('click', () => {
-    statusSelect.value = '';
-    navegarPara(1, '');
-  });
+          window.history.pushState({}, '', url);
+          buscarEntregas();
+        };
 
-  window.addEventListener('popstate', buscarEntregas);
+        filterForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          navegarPara(1, statusSelect.value);
+        });
 
-  buscarEntregas();
-});
-</script>
+        btnLimpar.addEventListener('click', () => {
+          statusSelect.value = '';
+          navegarPara(1, '');
+        });
+
+        window.addEventListener('popstate', buscarEntregas);
+
+        buscarEntregas();
+      });
+    </script>
