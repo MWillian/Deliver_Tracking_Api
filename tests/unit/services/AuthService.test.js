@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { AppError } from '../../../src/utils/AppError.js';
 
-// 1. No ambiente ESM, precisamos mockar os módulos ANTES de importá-los
 jest.unstable_mockModule('bcrypt', () => ({
     default: {
         hash: jest.fn(),
@@ -14,12 +13,10 @@ jest.unstable_mockModule('../../../src/utils/jwt.js', () => ({
     gerarRefreshToken: jest.fn()
 }));
 
-// 2. Importamos dinamicamente os módulos mockados e o nosso Service
 const bcrypt = (await import('bcrypt')).default;
 const jwt = await import('../../../src/utils/jwt.js');
 const { AuthService } = await import('../../../src/services/auth.service.js');
 
-// Factory para criar um repositório falso de usuários
 function criarUsuariosRepoFalso(overrides = {}) {
     return {
         buscarPorEmail: jest.fn(),
@@ -36,14 +33,12 @@ describe('AuthService', () => {
 
     describe('registrar', () => {
         it('deve lançar AppError com status 409 quando o e-mail já estiver cadastrado', async () => {
-            // Arrange
             const repo = criarUsuariosRepoFalso({
                 buscarPorEmail: jest.fn().mockResolvedValue({ id: 1, email: 'teste@teste.com' })
             });
             const service = new AuthService(repo);
             const dados = { nome: 'João', email: 'teste@teste.com', senha: 'senhas_segura123' };
 
-            // Act & Assert
             await expect(service.registrar(dados))
                 .rejects
                 .toMatchObject({ statusCode: 409, message: 'E-mail já cadastrado' });
@@ -52,23 +47,19 @@ describe('AuthService', () => {
         });
 
         it('deve registrar com sucesso, usar bcrypt para hash e omitir a senha no retorno', async () => {
-            // Arrange
             const usuarioCriadoNoBanco = { id: 1, nome: 'João', email: 'novo@teste.com', senha: 'senha_criptografada', papel: 'OPERADOR' };
             const repo = criarUsuariosRepoFalso({
                 buscarPorEmail: jest.fn().mockResolvedValue(null),
                 criar: jest.fn().mockResolvedValue(usuarioCriadoNoBanco)
             });
 
-            // Força o mock do bcrypt a retornar a string criptografada
             bcrypt.hash.mockResolvedValue('senha_criptografada');
 
             const service = new AuthService(repo);
             const dados = { nome: 'João', email: 'novo@teste.com', senha: 'senha_plana' };
 
-            // Act
             const resultado = await service.registrar(dados);
 
-            // Assert
             expect(bcrypt.hash).toHaveBeenCalledWith('senha_plana', 10);
             expect(repo.criar).toHaveBeenCalledWith(expect.objectContaining({ senha: 'senha_criptografada' }));
             expect(resultado).not.toHaveProperty('senha');
@@ -78,38 +69,32 @@ describe('AuthService', () => {
 
     describe('login', () => {
         it('deve lançar AppError com status 401 quando o e-mail não existir', async () => {
-            // Arrange
             const repo = criarUsuariosRepoFalso({
                 buscarPorEmail: jest.fn().mockResolvedValue(null)
             });
             const service = new AuthService(repo);
 
-            // Act & Assert
             await expect(service.login('fantasma@teste.com', '123'))
                 .rejects
                 .toMatchObject({ statusCode: 401, message: 'Credenciais inválidas' });
         });
 
         it('deve lançar AppError com status 401 quando a senha estiver incorreta', async () => {
-            // Arrange
             const usuarioDoBanco = { id: 1, email: 'teste@teste.com', senha: 'senha_certa' };
             const repo = criarUsuariosRepoFalso({
                 buscarPorEmail: jest.fn().mockResolvedValue(usuarioDoBanco)
             });
 
-            // Simula o bcrypt rejeitando a senha
             bcrypt.compare.mockResolvedValue(false);
 
             const service = new AuthService(repo);
 
-            // Act & Assert
             await expect(service.login('teste@teste.com', 'senha_errada'))
                 .rejects
                 .toMatchObject({ statusCode: 401, message: 'Credenciais inválidas' });
         });
 
         it('deve realizar login com sucesso e retornar tokens e payload do usuário', async () => {
-            // Arrange
             const usuarioDoBanco = { id: 1, nome: 'Maria', email: 'maria@teste.com', senha: 'hash', papel: 'OPERADOR' };
             const repo = criarUsuariosRepoFalso({
                 buscarPorEmail: jest.fn().mockResolvedValue(usuarioDoBanco)
@@ -121,10 +106,8 @@ describe('AuthService', () => {
 
             const service = new AuthService(repo);
 
-            // Act
             const resultado = await service.login('maria@teste.com', 'senha_correta');
 
-            // Assert
             expect(bcrypt.compare).toHaveBeenCalledWith('senha_correta', 'hash');
             expect(jwt.gerarAccessToken).toHaveBeenCalled();
             expect(resultado.accessToken).toBe('mock-access-token');
