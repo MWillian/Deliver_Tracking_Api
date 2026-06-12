@@ -8,7 +8,11 @@
   },
   "scripts": {
     "start": "node src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+    "test:watch": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --runInBand",
+    "test:coverage": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand",
+    "test:e2e": "npx dotenv -e .env.test -- npx playwright test"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +24,6 @@
     "@prisma/client": "^7.7.0",
     "bcrypt": "^6.0.0",
     "connect-flash": "^0.1.1",
-    "dotenv": "^17.4.2",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
@@ -29,6 +32,14 @@
     "node": "^25.8.1"
   },
   "devDependencies": {
-    "prisma": "^7.7.0"
+    "@jest/globals": "^30.4.1",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.3",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.4.2",
+    "dotenv-cli": "^11.0.0",
+    "jest": "^30.4.2",
+    "prisma": "^7.7.0",
+    "supertest": "^7.2.2"
   }
 }

@@ -3,7 +3,7 @@ import { authController } from '../container.js';
 
 const router = Router();
 
-router.post('/registrar', authController.registrar);
+router.post('/register', authController.registrar);
 router.post('/login', authController.login);
 
 export default router;

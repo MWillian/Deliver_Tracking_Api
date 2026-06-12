@@ -1,16 +1,16 @@
 import { AppError } from '../utils/AppError.js';
 
-export class EntregasService{
+export class EntregasService {
     /**
      * @param {import('../repositories/IEntregas.repository.js').IEntregasRepository} entregasRepository
      * @param {import('../repositories/IMotoristas.repository.js').IMotoristasRepository} motoristaRepository
      */
-    constructor(entregasRepository, motoristaRepository ){
+    constructor(entregasRepository, motoristaRepository) {
         this.entregasRepository = entregasRepository;
         this.motoristaRepository = motoristaRepository;
     }
 
-    async listarTodos(){
+    async listarTodos() {
         return this.entregasRepository.listarTodos();
     }
 
@@ -38,7 +38,7 @@ export class EntregasService{
         );
 
         if (existeDuplicado) {
-            throw new AppError('Já existe uma entrega ativa com essas características', 400);
+            throw new AppError('Já existe uma entrega ativa com essas características', 409);
         }
 
         const agora = new Date();
@@ -60,9 +60,9 @@ export class EntregasService{
         return this.entregasRepository.criar(novaEntrega);
     }
 
-    async buscarPorId(id){
+    async buscarPorId(id) {
         const entrega = await this.entregasRepository.buscarPorId(id);
-        
+
         if (!entrega) {
             throw new AppError('Entrega não encontrada', 404);
         }
@@ -93,28 +93,39 @@ export class EntregasService{
         const entrega = await this.entregasRepository.buscarPorId(id);
 
         if (entrega.status === 'ENTREGUE' || entrega.status === 'CANCELADA') {
-            throw new AppError(`Não é permitido cancelar uma entrega que já foi ${entrega.status}`, 400);
+            throw new AppError(`Não é permitido cancelar uma entrega que já foi ${entrega.status}`, 422);
         }
 
         return await this.atualizarStatus(id, 'CANCELADA', 'Entrega cancelada');
     }
 
     async atualizarStatus(id, novoStatus, descricaoEvento) {
+        const entrega = await this.entregasRepository.buscarPorId(id);
+
+        if (entrega.status === 'ENTREGUE' && novoStatus === 'EM_TRANSITO') {
+            throw new AppError('Não é possível voltar o status de ENTREGUE para EM_TRANSITO', 422);
+        }
+        if (entrega.status === 'CRIADA' && novoStatus === 'ENTREGUE') {
+            throw new AppError('Não é permitido pular de CRIADA diretamente para ENTREGUE', 422);
+        }
+
         const agora = new Date();
         const dataFormatada = `${agora.getDate()}/${agora.getMonth() + 1}/${agora.getFullYear()}`;
-        
+
         const novoEvento = {
             data: dataFormatada,
             descricao: novoStatus
         };
 
-        const entrega = await this.entregasRepository.buscarPorId(id);
         const historicoAtualizado = [...entrega.historico, novoEvento];
-
-        return await this.entregasRepository.atualizar(id, {
+        const dadosAtualizacao = {
             status: novoStatus,
             historico: historicoAtualizado
-        });
+        };
+        if (novoStatus === 'ENTREGUE') {
+            dadosAtualizacao.dataEntrega = agora;
+        }
+        return await this.entregasRepository.atualizar(id, dadosAtualizacao);
     }
 
     async obterHistorico(id) {
@@ -122,24 +133,24 @@ export class EntregasService{
         return entrega.historico;
     }
 
-    async atribuirEntrega(motoristaId,idEntrega){
+    async atribuirEntrega(motoristaId, idEntrega) {
         const entrega = await this.entregasRepository.buscarPorId(idEntrega);
         if (!entrega) {
-            throw new AppError('Entrega não encontrada.',404);
+            throw new AppError('Entrega não encontrada.', 404);
         }
 
         const motorista = await this.motoristaRepository.buscarPorId(motoristaId);
 
         if (!motorista) {
-            throw new AppError('Motorista não encontrado.',404);
+            throw new AppError('Motorista não encontrado.', 404);
         }
-        
+
         if (entrega.status != "CRIADA") {
-            throw new AppError('Só é possível atribuir um motorista para uma entrega recém criada.',422);
+            throw new AppError('Só é possível atribuir um motorista para uma entrega recém criada.', 422);
         }
 
         if (motorista.status != "ATIVO") {
-            throw new AppError('Motorista inativo.',422);
+            throw new AppError('Motorista inativo.', 422);
         }
 
         const historico = Array.isArray(entrega.historico) ? entrega.historico : [];
@@ -154,7 +165,7 @@ export class EntregasService{
             });
             const entregaAtribuida = await this.entregasRepository.atualizar(idEntrega, entrega);
             return entregaAtribuida;
-        }else{
+        } else {
             const agora = new Date();
             const dataFormatada = `${agora.getDate()}/${agora.getMonth() + 1}/${agora.getFullYear()}`;
             entrega.historico.push({
