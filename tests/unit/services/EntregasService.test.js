@@ -82,7 +82,7 @@ describe('Testes Unitários: EntregasService', () => {
     describe('criar', () => {
         it('deve lançar AppError 400 se faltarem dados obrigatórios', async () => {
             const service = new EntregasService(criarEntregasRepoFalso(), criarMotoristasRepoFalso());
-            await expect(service.criar({ descricao: 'A' })) // Sem origem e destino
+            await expect(service.criar({ descricao: 'A' })) 
                 .rejects.toMatchObject({ statusCode: 400, message: 'Descrição, origem e destino são obrigatórios' });
         });
 
@@ -230,7 +230,7 @@ describe('Testes Unitários: EntregasService', () => {
         it('deve SUBSTITUIR o motorista e registrar no histórico se já houver um atribuído', async () => {
             const entregaOriginal = { 
                 id: 1, status: 'CRIADA', 
-                historico: [{ descricao: 'CRIADA' }, { motoristaId: 2, descricao: 'Atribuição' }] // Já tem motorista 2
+                historico: [{ descricao: 'CRIADA' }, { motoristaId: 2, descricao: 'Atribuição' }]
             };
             const entregasRepo = criarEntregasRepoFalso({ 
                 buscarPorId: jest.fn().mockResolvedValue(entregaOriginal),
@@ -239,7 +239,7 @@ describe('Testes Unitários: EntregasService', () => {
             const motoristasRepo = criarMotoristasRepoFalso({ buscarPorId: jest.fn().mockResolvedValue({ id: 3, nome: 'Lucas', status: 'ATIVO' }) });
             const service = new EntregasService(entregasRepo, motoristasRepo);
             
-            const resultado = await service.atribuirEntrega(3, 1); // Substituindo pelo 3
+            const resultado = await service.atribuirEntrega(3, 1); 
             
             const ultimoEvento = resultado.historico[resultado.historico.length - 1];
             expect(ultimoEvento.motoristaId).toBe(3);
