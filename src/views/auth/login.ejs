@@ -16,7 +16,7 @@
 
                 <div class="form-group">
                     <label for="senha" class="detail-label">Senha</label>
-                    <input type="password" id="senha" name="senha" class="form-input" required placeholder="Sua senha" data-testid="input-senha">
+                    <input type="password" id="senha" name="senha" class="form-input" required placeholder="Sua senha secreta" data-testid="input-senha">
                 </div>
 
                 <div id="loginError" class="alert alert-danger" style="display: none; margin-top: 1rem;" data-testid="alerta-erro"></div>
@@ -53,10 +53,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         
         localStorage.setItem('token', accessToken);
         localStorage.setItem('usuario', JSON.stringify(usuario));
-        
+        document.cookie = `token=${accessToken}; path=/; max-age=28800`; 
         window.location.href = '/painel';
     } catch (err) {
-        errorDiv.textContent = err.response?.data?.message || 'Erro ao realizar login. Tente novamente.';
+        errorDiv.textContent = err.response?.data?.err || 'Credenciais inválidas. Tente novamente.';
         errorDiv.style.display = 'block';
     } finally {
         btn.disabled = false;

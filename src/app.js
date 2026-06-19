@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import session from 'express-session';
 import flash from 'connect-flash';
+import cookieParser from 'cookie-parser';
 import { router } from '../src/routes/index.js';
 import { painelRouter } from '../src/routes/painel.router.js';
 import methodOverride from 'method-override';
@@ -19,6 +20,7 @@ app.use(express.static(join(__dirname, '..', 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride((req) => req.body && req.body._method));
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'segredo-dev',

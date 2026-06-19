@@ -11,6 +11,7 @@ export class PainelEntregasController {
         this.avancarStatus = this.avancarStatus.bind(this);
         this.cancelar = this.cancelar.bind(this);
         this.exibirAtribuicao = this.exibirAtribuicao.bind(this);
+        this.atribuir = this.atribuir.bind(this);
     }
 
     async listarTodos(req, res, next) {
@@ -75,7 +76,25 @@ export class PainelEntregasController {
     }
 
     async exibirDetalhe(req, res, next) {
-        res.render('entregas/detalhe');
+        try {
+            const id = Number(req.params.id);
+
+            if (!Number.isInteger(id) || id < 1) {
+                throw new AppError('ID inválido.', 400);
+            }
+
+            const entrega = await this.service.buscarPorId(id);
+            const historico = await this.service.obterHistorico(id);
+
+            res.render('entregas/detalhe', {
+                entrega,
+                historico: Array.isArray(historico) ? historico : [],
+                sucesso: req.query.sucesso || '',
+                erro: req.query.erro || ''
+            });
+        } catch (err) {
+            next(err);
+        }
     }
 
     async avancarStatus(req, res, next) {
@@ -116,8 +135,45 @@ export class PainelEntregasController {
 
     async exibirAtribuicao(req, res, next) {
         try {
-            res.render('painel/atribuir-motorista');
+            const entregas = await this.service.listarPorStatus('CRIADA');
+            const motoristas = await this.motoristasService.listarComFiltros('ATIVO');
+
+            res.render('painel/atribuir-motorista', {
+                entregas,
+                motoristas,
+                erro: req.query.erro || '',
+                sucesso: req.query.sucesso || ''
+            });
         } catch (err) {
+            next(err);
+        }
+    }
+
+    async atribuir(req, res, next) {
+        try {
+            const { motoristaId, entregaId } = req.body;
+
+            if (!motoristaId || !entregaId) {
+                throw new AppError('Motorista e Entrega são obrigatórios.', 400);
+            }
+
+            const idMotorista = Number(motoristaId);
+            const idEntrega = Number(entregaId);
+
+            if (!Number.isInteger(idMotorista) || idMotorista < 1) {
+                throw new AppError('ID do motorista inválido.', 400);
+            }
+
+            if (!Number.isInteger(idEntrega) || idEntrega < 1) {
+                throw new AppError('ID da entrega inválido.', 400);
+            }
+
+            await this.service.atribuirEntrega(idMotorista, idEntrega);
+            res.redirect('/painel/atribuir-motorista?sucesso=Motorista%20atribuído%20com%20sucesso.');
+        } catch (err) {
+            if (err instanceof AppError) {
+                return res.redirect(`/painel/atribuir-motorista?erro=${encodeURIComponent(err.message)}`);
+            }
             next(err);
         }
     }

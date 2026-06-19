@@ -5,7 +5,7 @@ import { autorizar } from '../middlewares/autenticacao.middleware.js';
 const router = Router();
 
 router.get('/', entregasController.listarTodos);
-router.post('/', entregasController.criar);
+router.post('/',  entregasController.criar);
 router.get('/:id', entregasController.buscarPorId);
 router.get('/:id/historico', entregasController.obterHistorico);
 router.patch('/:id/avancar', entregasController.avancar);
