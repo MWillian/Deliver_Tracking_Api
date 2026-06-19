@@ -1,16 +1,27 @@
 <%- include('../../partials/header', { titulo: 'Relatório: Entregas por Status' }) %>
 
+<% 
+  const data = locals.entregasPorStatus || {};
+  const qtdCriada = data.CRIADA || 0;
+  const qtdEmTransito = data.EM_TRANSITO || 0;
+  const qtdEntregue = data.ENTREGUE || 0;
+  const qtdCancelada = data.CANCELADA || 0;
+  
+  const total = locals.total || (qtdCriada + qtdEmTransito + qtdEntregue + qtdCancelada);
+
+  const calcPct = (valor) => {
+    if (total === 0) return '0.00%';
+    return ((valor / total) * 100).toFixed(2) + '%';
+  };
+%>
+
 <div class="deliver-list-container">
   <div class="page-header">
     <h1>Relatório: Entregas por Status</h1>
     <a href="/painel/relatorios" class="btn btn-link">&larr; Voltar ao Dashboard</a>
   </div>
 
-  <div id="loading-state" style="text-align: center; padding: 2rem;">
-    <p>Calculando relatório de entregas...</p>
-  </div>
-
-  <section id="content-state" class="detail-section" style="display: none;">
+  <section class="detail-section">
     <h2>Resumo</h2>
     <div class="data-grid" style="grid-template-columns: 1.5fr 1fr 1fr;">
       <div class="data-grid-header">
@@ -21,28 +32,30 @@
 
       <div class="data-grid-row">
         <div class="data-grid-cell">CRIADA</div>
-        <div id="qtd-criada" class="data-grid-cell">-</div>
-        <div id="pct-criada" class="data-grid-cell">-</div>
+        <div class="data-grid-cell"><%= qtdCriada %></div>
+        <div class="data-grid-cell"><%= calcPct(qtdCriada) %></div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell">EM TRÂNSITO</div>
-        <div id="qtd-em_transito" class="data-grid-cell">-</div>
-        <div id="pct-em_transito" class="data-grid-cell">-</div>
+        <div class="data-grid-cell"><%= qtdEmTransito %></div>
+        <div class="data-grid-cell"><%= calcPct(qtdEmTransito) %></div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell">ENTREGUE</div>
-        <div id="qtd-entregue" class="data-grid-cell">-</div>
-        <div id="pct-entregue" class="data-grid-cell">-</div>
+        <div class="data-grid-cell"><%= qtdEntregue %></div>
+        <div class="data-grid-cell"><%= calcPct(qtdEntregue) %></div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell">CANCELADA</div>
-        <div id="qtd-cancelada" class="data-grid-cell">-</div>
-        <div id="pct-cancelada" class="data-grid-cell">-</div>
+        <div class="data-grid-cell"><%= qtdCancelada %></div>
+        <div class="data-grid-cell"><%= calcPct(qtdCancelada) %></div>
       </div>
       <div class="data-grid-row">
         <div class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;">TOTAL</div>
-        <div id="qtd-total" class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;">-</div>
-        <div class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;">100.00%</div>
+        <div class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;"><%= total %></div>
+        <div class="data-grid-cell" style="background-color: #f5f5f5; font-weight: bold;">
+          <%= total > 0 ? '100.00%' : '0.00%' %>
+        </div>
       </div>
     </div>
 
@@ -71,44 +84,3 @@
 </div>
 
 <%- include('../../partials/footer') %>
-
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-  const loadingState = document.getElementById('loading-state');
-  const contentState = document.getElementById('content-state');
-
-  try {
-    const response = await api.get('/relatorios/entregas-por-status');
-    const statusData = response.data;
-
-    const qtdCriada = statusData.CRIADA || 0;
-    const qtdEmTransito = statusData.EM_TRANSITO || 0;
-    const qtdEntregue = statusData.ENTREGUE || 0;
-    const qtdCancelada = statusData.CANCELADA || 0;
-
-    const total = qtdCriada + qtdEmTransito + qtdEntregue + qtdCancelada;
-
-    const calcularPercentual = (valor) => {
-      if (total === 0) return '0.00%';
-      return ((valor / total) * 100).toFixed(2) + '%';
-    };
-
-    document.getElementById('qtd-criada').textContent = qtdCriada;
-    document.getElementById('qtd-em_transito').textContent = qtdEmTransito;
-    document.getElementById('qtd-entregue').textContent = qtdEntregue;
-    document.getElementById('qtd-cancelada').textContent = qtdCancelada;
-    document.getElementById('qtd-total').textContent = total;
-
-    document.getElementById('pct-criada').textContent = calcularPercentual(qtdCriada);
-    document.getElementById('pct-em_transito').textContent = calcularPercentual(qtdEmTransito);
-    document.getElementById('pct-entregue').textContent = calcularPercentual(qtdEntregue);
-    document.getElementById('pct-cancelada').textContent = calcularPercentual(qtdCancelada);
-
-    loadingState.style.display = 'none';
-    contentState.style.display = 'block';
-
-  } catch (erro) {
-    loadingState.innerHTML = '<p class="alert alert-danger" style="color: red;">Erro ao gerar relatório. Tente novamente mais tarde.</p>';
-  }
-});
-</script>

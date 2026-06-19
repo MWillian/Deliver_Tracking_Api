@@ -135,8 +135,8 @@ export class PainelEntregasController {
 
     async exibirAtribuicao(req, res, next) {
         try {
-            const entregas = await this.service.listarTodos();
-            const motoristas = await this.motoristasService.listarTodos();
+            const entregas = await this.service.listarPorStatus('CRIADA');
+            const motoristas = await this.motoristasService.listarComFiltros('ATIVO');
 
             res.render('painel/atribuir-motorista', {
                 entregas,

@@ -18,6 +18,13 @@ export class AuthController {
         try {
             const { email, senha } = req.body;
             const resultado = await this.authService.login(email, senha);
+            res.cookie('token', resultado.accessToken, {
+                maxAge: 8 * 60 * 60 * 1000,
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax'
+            });
+
             res.status(200).json(resultado);
         } catch (error) {
             next(error);

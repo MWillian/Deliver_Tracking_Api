@@ -2,178 +2,108 @@
 
   <div class="deliver-list-container">
     <div class="page-header">
-      <h1 id="titulo-pagina">Detalhe da Entrega #...</h1>
+      <h1>Detalhe da Entrega #<%= entrega.id %>
+      </h1>
       <a href="/painel/entregas" class="btn btn-link">&larr; Voltar</a>
     </div>
 
-    <div id="alert-container" style="display: none;" class="alert">
-      <p id="alert-message"></p>
-    </div>
+    <% if (typeof sucesso !=='undefined' && sucesso) { %>
+      <div class="alert alert-success">
+        <p>
+          <%= sucesso %>
+        </p>
+      </div>
+      <% } %>
 
-    <div id="loading-state" style="text-align: center; padding: 2rem;">
-      <p>Carregando informações da entrega...</p>
-    </div>
+        <% if (typeof erro !=='undefined' && erro) { %>
 
-    <div id="content-state" style="display: none;">
-      <section class="detail-section detail-card">
-        <div class="detail-card-header">
-          <h2>Informações da Entrega</h2>
-          <span id="badge-status" class="badge"></span>
-        </div>
+          <div class="alert alert-danger">
+            <p>
+              <%= erro %>
+            </p>
+          </div>
+          <% } %>
 
-        <div class="detail-grid">
-          <div class="detail-item">
-            <span class="detail-label">ID</span>
-            <p id="val-id" class="detail-value">-</p>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Descrição</span>
-            <p id="val-descricao" class="detail-value">-</p>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Origem</span>
-            <p id="val-origem" class="detail-value">-</p>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Destino</span>
-            <p id="val-destino" class="detail-value">-</p>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Criada em</span>
-            <p id="val-data" class="detail-value">-</p>
-          </div>
-        </div>
-      </section>
+            <section class="detail-secti  on detail-card">
+              <div class="detail-card-header">
+                <h2>Informações da Entrega</h2>
+                <span class="badge badge-<%= entrega.status.toLowerCase() %>">
+                  <%= entrega.status.replace('_', ' ' ) %>
+                </span>
+              </div>
 
-      <section class="history-detail-section">
-        <h2>Histórico de Movimentações</h2>
-        <ol id="timeline-list" class="timeline"></ol>
-        <p id="empty-history" class="empty-history" style="display: none;">Nenhum histórico disponível.</p>
-      </section>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">ID</span>
+                  <p class="detail-value">
+                    <%= entrega.id %>
+                  </p>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Descricao</span>
+                  <p class="detail-value">
+                    <%= entrega.descricao %>
+                  </p>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Origem</span>
+                  <p class="detail-value">
+                    <%= entrega.origem %>
+                  </p>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Destino</span>
+                  <p class="detail-value">
+                    <%= entrega.destino %>
+                  </p>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Criada em</span>
+                  <p class="detail-value">
+                    <%= entrega.createdAt ? new Date(entrega.createdAt).toLocaleDateString('pt-BR') : '-' %>
+                  </p>
+                </div>
+              </div>
+            </section>
 
-      <section class="actions-section">
-        <h2>Ações</h2>
-        <div class="actions-grid actions-grid-end">
-          <button id="btn-avancar" class="btn btn-primary">Avançar Status</button>
-          <button id="btn-cancelar" class="btn btn-danger">Cancelar Entrega</button>
-        </div>
-      </section>
-    </div>
+            <section class="history-detail-section">
+              <h2>Historico de Movimentacoes</h2>
+              <% if (historico && historico.length> 0) { %>
+                <ol class="timeline">
+                  <% historico.forEach(evento=> { %>
+                    <li class="timeline-item">
+                      <span class="timeline-dot"></span>
+                      <div class="timeline-content">
+                        <p class="timeline-date">
+                          <%= evento.data %>
+                        </p>
+                        <p class="timeline-text">
+                          <%= evento.descricao %>
+                        </p>
+                      </div>
+                    </li>
+                    <% }); %>
+                </ol>
+                <% } else { %>
+                  <p class="empty-history">Nenhum historico disponivel.</p>
+                  <% } %>
+            </section>
+
+            <section class="actions-section">
+              <h2>Ações</h2>
+              <div class="actions-grid actions-grid-end">
+                <form method="POST" action="/painel/entregas/<%= entrega.id %>/avancar" class="action-form">
+                  <% let statusString=(entrega.status==='ENTREGUE' || entrega.status==='CANCELADA' ? 'disabled' : '' )%>
+                    <input type="hidden" name="_method" value="PATCH">
+                    <button type="submit" class="btn btn-primary <%= statusString %>" <% statusString %> %>>Avançar
+                      Status</button>
+                </form>
+
+                <form method="POST" action="/painel/entregas/<%= entrega.id %>/cancelar" class="action-form">
+                  <input type="hidden" name="_method" value="PATCH">
+                  <button type="submit" class="btn btn-danger <%= statusString %>" <% statusString %>>Cancelar
+                    Entrega</button>
+                </form>
+              </div>
+            </section>
   </div>
-
-  <%- include('../partials/footer') %>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', async () => {
-        const urlParts = window.location.pathname.split('/').filter(Boolean);
-        const entregaId = urlParts[urlParts.length - 1];
-
-        const loadingState = document.getElementById('loading-state');
-        const contentState = document.getElementById('content-state');
-        const alertContainer = document.getElementById('alert-container');
-        const alertMessage = document.getElementById('alert-message');
-
-        const btnAvancar = document.getElementById('btn-avancar');
-        const btnCancelar = document.getElementById('btn-cancelar');
-
-        const mostrarAlerta = (mensagem, tipo = 'success') => {
-          alertContainer.className = `alert alert-${tipo}`;
-          alertMessage.textContent = mensagem;
-          alertContainer.style.display = 'block';
-        };
-
-        const carregarDados = async () => {
-          try {
-            const [resEntrega, resHistorico] = await Promise.all([
-              api.get(`/entregas/${entregaId}`),
-              api.get(`/entregas/${entregaId}/historico`)
-            ]);
-
-            const entrega = resEntrega.data;
-            const historico = resHistorico.data;
-
-            document.getElementById('titulo-pagina').textContent = `Detalhe da Entrega #${entrega.id}`;
-            document.getElementById('val-id').textContent = entrega.id;
-            document.getElementById('val-descricao').textContent = entrega.descricao;
-            document.getElementById('val-origem').textContent = entrega.origem;
-            document.getElementById('val-destino').textContent = entrega.destino;
-
-            if (entrega.createdAt) {
-              document.getElementById('val-data').textContent = new Date(entrega.createdAt).toLocaleDateString('pt-BR');
-            }
-
-            const badge = document.getElementById('badge-status');
-            badge.textContent = entrega.status.replace('_', ' ');
-            badge.className = `badge badge-${entrega.status.toLowerCase()}`;
-
-            const isFinalizada = entrega.status === 'ENTREGUE' || entrega.status === 'CANCELADA';
-            btnAvancar.disabled = isFinalizada;
-            btnCancelar.disabled = isFinalizada;
-
-            const timelineList = document.getElementById('timeline-list');
-            const emptyHistory = document.getElementById('empty-history');
-
-            timelineList.innerHTML = '';
-
-            if (historico && historico.length > 0) {
-              historico.forEach(evento => {
-                const li = document.createElement('li');
-                li.className = 'timeline-item';
-                li.innerHTML = `
-            <span class="timeline-dot"></span>
-            <div class="timeline-content">
-              <p class="timeline-date">${evento.data}</p>
-              <p class="timeline-text">${evento.descricao}</p>
-            </div>
-          `;
-                timelineList.appendChild(li);
-              });
-              emptyHistory.style.display = 'none';
-              timelineList.style.display = 'block';
-            } else {
-              timelineList.style.display = 'none';
-              emptyHistory.style.display = 'block';
-            }
-
-            loadingState.style.display = 'none';
-            contentState.style.display = 'block';
-
-          } catch (erro) {
-            loadingState.style.display = 'none';
-            mostrarAlerta('Erro ao carregar dados da entrega.', 'danger');
-          }
-        };
-
-        btnAvancar.addEventListener('click', async () => {
-          try {
-            btnAvancar.disabled = true;
-            btnAvancar.textContent = 'Avançando...';
-            const response = await api.patch(`/entregas/${entregaId}/avancar`);
-            mostrarAlerta(response.data.mensagem || 'Status avançado com sucesso!', 'success');
-            await carregarDados();
-          } catch (erro) {
-            mostrarAlerta(erro.response?.data?.erro || 'Erro ao avançar status.', 'danger');
-          } finally {
-            btnAvancar.textContent = 'Avançar Status';
-          }
-        });
-
-        btnCancelar.addEventListener('click', async () => {
-          if (!confirm('Tem certeza que deseja cancelar esta entrega?')) return;
-
-          try {
-            btnCancelar.disabled = true;
-            btnCancelar.textContent = 'Cancelando...';
-            await api.patch(`/entregas/${entregaId}/cancelar`);
-            mostrarAlerta('Entrega cancelada com sucesso.', 'success');
-            await carregarDados();
-          } catch (erro) {
-            mostrarAlerta(erro.response?.data?.erro || erro.response?.data?.message || 'Erro ao cancelar.', 'danger');
-          } finally {
-            btnCancelar.textContent = 'Cancelar Entrega';
-          }
-        });
-
-        carregarDados();
-      });
-    </script>

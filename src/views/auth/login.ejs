@@ -11,18 +11,18 @@
             <form id="loginForm" class="form-container">
                 <div class="form-group">
                     <label for="email" class="detail-label">E-mail</label>
-                    <input type="email" id="email" name="email" class="form-input" required placeholder="Digite seu e-mail">
+                    <input type="email" id="email" name="email" class="form-input" required placeholder="Digite seu e-mail" data-testid="input-email">
                 </div>
 
                 <div class="form-group">
                     <label for="senha" class="detail-label">Senha</label>
-                    <input type="password" id="senha" name="senha" class="form-input" required placeholder="Sua senha secreta">
+                    <input type="password" id="senha" name="senha" class="form-input" required placeholder="Sua senha secreta" data-testid="input-senha">
                 </div>
 
-                <div id="loginError" class="alert alert-danger" style="display: none; margin-top: 1rem;"></div>
+                <div id="loginError" class="alert alert-danger" style="display: none; margin-top: 1rem;" data-testid="alerta-erro"></div>
 
                 <div class="form-actions" style="margin-top: 1.5rem; display: flex;">
-                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Entrar</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;" data-testid="btn-login">Entrar</button>
                 </div>
                 
                 <div style="text-align: center; margin-top: 1.5rem; color: var(--text-muted);">
@@ -53,10 +53,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         
         localStorage.setItem('token', accessToken);
         localStorage.setItem('usuario', JSON.stringify(usuario));
-        
+        document.cookie = `token=${accessToken}; path=/; max-age=28800`; 
         window.location.href = '/painel';
     } catch (err) {
-        errorDiv.textContent = err.response?.data?.erro || 'Erro ao realizar login. Tente novamente.';
+        errorDiv.textContent = err.response?.data?.err || 'Credenciais inválidas. Tente novamente.';
         errorDiv.style.display = 'block';
     } finally {
         btn.disabled = false;

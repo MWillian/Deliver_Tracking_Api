@@ -1,77 +1,41 @@
 <%- include('../partials/header', { titulo: 'Nova Entrega' }) %>
+  <div class="deliver-list-container">
+    <div class="page-header">
+      <h1>Criar Nova Entrega</h1>
+      <a href="/painel/entregas" class="btn btn-link">&larr; Voltar</a>
+    </div>
+    <% if (typeof erro !=='undefined' && erro) { %>
+      <div class="alert alert-danger">
+        <p>
+          <%= erro %>
+        </p>
+      </div>
+      <% } %>
+        <div class="form-wrapper">
+          <section class="detail-card">
+            <form method="POST" action="/painel/entregas" class="form-container">
+              <div class="form-group">
+                <label for="descricao" class="detail-label">Descrição:</label>
+                <input type="text" id="descricao" name="descricao" required value="<%= entrega.descricao || '' %>"
+                  class="form-input">
+              </div>
+              <div class="form-group">
+                <label for="origem" class="detail-label">Origem:</label>
+                <input type="text" id="origem" name="origem" required value="<%= entrega.origem || '' %>"
+                  class="form-input">
+              </div>
 
-<div class="deliver-list-container">
-  <div class="page-header">
-    <h1>Criar Nova Entrega</h1>
-    <a href="/painel/entregas" class="btn btn-link">&larr; Voltar</a>
+              <div class="form-group">
+                <label for="destino" class="detail-label">Destino:</label>
+                <input type="text" id="destino" name="destino" required value="<%= entrega.destino || '' %>"
+                  class="form-input">
+              </div>
+
+              <div class="form-actions">
+                <a href="/painel/entregas" class="btn btn-outline">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Criar Entrega</button>
+              </div>
+            </form>
+          </section>
+        </div>
   </div>
-
-  <div id="error-container" class="alert alert-danger" style="display: none;">
-    <p id="error-message"></p>
-  </div>
-
-  <div class="form-wrapper">
-    <section class="detail-card">
-      <form id="form-nova-entrega" class="form-container">
-        <div class="form-group">
-          <label for="descricao" class="detail-label">Descrição:</label>
-          <input type="text" id="descricao" name="descricao" required class="form-input" placeholder="Ex: Entrega de milho">
-        </div>
-
-        <div class="form-group">
-          <label for="origem" class="detail-label">Origem:</label>
-          <input type="text" id="origem" name="origem" required class="form-input" placeholder="Endereço de coleta">
-        </div>
-
-        <div class="form-group">
-          <label for="destino" class="detail-label">Destino:</label>
-          <input type="text" id="destino" name="destino" required class="form-input" placeholder="Endereço de entrega">
-        </div>
-
-        <div class="form-actions">
-          <a href="/painel/entregas" class="btn btn-outline">Cancelar</a>
-          <button type="submit" id="btn-submit" class="btn btn-primary">Criar Entrega</button>
-        </div>
-      </form>
-    </section>
-  </div>
-</div>
-
-<%- include('../partials/footer') %>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('form-nova-entrega');
-  
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const btnSubmit = document.getElementById('btn-submit');
-    const errorContainer = document.getElementById('error-container');
-    const errorMessage = document.getElementById('error-message');
-
-    const payload = {
-      descricao: document.getElementById('descricao').value,
-      origem: document.getElementById('origem').value,
-      destino: document.getElementById('destino').value
-    };
-
-    errorContainer.style.display = 'none';
-    btnSubmit.disabled = true;
-    btnSubmit.textContent = 'Criando...';
-
-    try {
-      await api.post('/entregas', payload);
-      
-      window.location.href = '/painel/entregas?sucesso=Entrega criada com sucesso';
-      
-    } catch (erro) {
-      errorMessage.textContent = erro.response?.data?.erro || erro.response?.data?.message || 'Erro inesperado ao criar a entrega.';
-      errorContainer.style.display = 'block';
-    } finally {
-      btnSubmit.disabled = false;
-      btnSubmit.textContent = 'Criar Entrega';
-    }
-  });
-});
-</script>

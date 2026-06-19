@@ -2,201 +2,136 @@
 
   <div class="deliver-list-container">
     <div class="page-header">
-      <h1 id="titulo-pagina">Detalhe do Motorista #...</h1>
+      <h1>Detalhe do Motorista #<%= motorista.id %>
+      </h1>
       <a href="/painel/motoristas" class="btn btn-link">&larr; Voltar</a>
     </div>
 
-    <div id="alert-container" class="alert alert-success" style="display: none;">
-      <p id="alert-message"></p>
-    </div>
-
-    <div id="loading-state" style="text-align: center; padding: 2rem;">
-      <p>Carregando informações do motorista...</p>
-    </div>
-
-    <div id="content-state" style="display: none;">
-      <section class="detail-section">
-        <h2>Informações do Motorista</h2>
-        <div class="detail-grid">
-          <div class="detail-item">
-            <strong>ID:</strong>
-            <p id="val-id">-</p>
-          </div>
-          <div class="detail-item">
-            <strong>Nome:</strong>
-            <p id="val-nome">-</p>
-          </div>
-          <div class="detail-item">
-            <strong>CPF:</strong>
-            <p id="val-cpf">-</p>
-          </div>
-          <div class="detail-item">
-            <strong>Placa:</strong>
-            <p id="val-placa">-</p>
-          </div>
-          <div class="detail-item">
-            <strong>Status:</strong>
+    <% if (locals.flash && flash.sucesso && flash.sucesso.length> 0) { %>
+      <div class="alert alert-success">
+        <p>
+          <%= flash.sucesso[0] %>
+        </p>
+      </div>
+      <% } %>
+        <% if (locals.flash && flash.erro && flash.erro.length> 0) { %>
+          <div class="alert alert-danger">
             <p>
-              <span id="badge-status" class="badge"></span>
+              <%= flash.erro[0] %>
             </p>
           </div>
-        </div>
-      </section>
+          <% } %>
 
-      <section class="detail-section">
-        <h2>Histórico de Entregas</h2>
+            <div>
+              <section class="detail-section">
+                <h2>Informações do Motorista</h2>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <strong>ID:</strong>
+                    <p>
+                      <%= motorista.id %>
+                    </p>
+                  </div>
+                  <div class="detail-item">
+                    <strong>Nome:</strong>
+                    <p>
+                      <%= motorista.nome %>
+                    </p>
+                  </div>
+                  <div class="detail-item">
+                    <strong>CPF:</strong>
+                    <p>
+                      <%= motorista.cpf %>
+                    </p>
+                  </div>
+                  <div class="detail-item">
+                    <strong>Placa:</strong>
+                    <p>
+                      <%= motorista.placaVeiculo %>
+                    </p>
+                  </div>
+                  <div class="detail-item">
+                    <strong>Status:</strong>
+                    <p>
+                      <span class="badge badge-<%= motorista.status.toLowerCase() %>">
+                        <%= motorista.status %>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </section>
 
-        <form id="filter-form" class="filter-bar">
-          <div class="filter-group">
-            <label for="status">Filtrar por status:</label>
-            <select id="status" name="status">
-              <option value="">Todos</option>
-              <option value="CRIADA">CRIADA</option>
-              <option value="EM_TRANSITO">EM TRÂNSITO</option>
-              <option value="ENTREGUE">ENTREGUE</option>
-              <option value="CANCELADA">CANCELADA</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-secondary">Filtrar</button>
-          <button type="button" id="btn-limpar" class="btn btn-link">Limpar</button>
-        </form>
+              <section class="detail-section">
+                <h2>Histórico de Entregas</h2>
 
-        <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
-          <div class="data-grid-header">
-            <div class="data-grid-cell-header">ID</div>
-            <div class="data-grid-cell-header">Descrição</div>
-            <div class="data-grid-cell-header">Origem</div>
-            <div class="data-grid-cell-header">Destino</div>
-            <div class="data-grid-cell-header">Status</div>
-            <div class="data-grid-cell-header">Data Criação</div>
-            <div class="data-grid-cell-header" style="text-align: right;">Ações</div>
-          </div>
+                <form class="filter-bar" method="GET" action="/painel/motoristas/<%= motorista.id %>">
+                  <div class="filter-group">
+                    <label for="status">Filtrar por status:</label>
+                    <select id="status" name="status">
+                      <option value="" <%=!locals.statusSelecionado ? 'selected' : '' %>>Todos</option>
+                      <option value="CRIADA" <%=locals.statusSelecionado==='CRIADA' ? 'selected' : '' %>>CRIADA</option>
+                      <option value="EM_TRANSITO" <%=locals.statusSelecionado==='EM_TRANSITO' ? 'selected' : '' %>>EM
+                        TRÂNSITO</option>
+                      <option value="ENTREGUE" <%=locals.statusSelecionado==='ENTREGUE' ? 'selected' : '' %>>ENTREGUE
+                      </option>
+                      <option value="CANCELADA" <%=locals.statusSelecionado==='CANCELADA' ? 'selected' : '' %>>CANCELADA
+                      </option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-secondary">Filtrar</button>
+                  <a href="/painel/motoristas/<%= motorista.id %>" class="btn btn-link">Limpar</a>
+                </form>
 
-          <div id="grid-body" style="display: contents;"></div>
-        </div>
-      </section>
-    </div>
+                <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
+                  <div class="data-grid-header">
+                    <div class="data-grid-cell-header">ID</div>
+                    <div class="data-grid-cell-header">Descrição</div>
+                    <div class="data-grid-cell-header">Origem</div>
+                    <div class="data-grid-cell-header">Destino</div>
+                    <div class="data-grid-cell-header">Status</div>
+                    <div class="data-grid-cell-header">Data Criação</div>
+                    <div class="data-grid-cell-header" style="text-align: right;">Ações</div>
+                  </div>
+
+                  <div id="grid-body" style="display: contents;">
+                    <% if (locals.entregas && entregas.length> 0) { %>
+                      <% entregas.forEach(entrega=> { %>
+                        <div class="data-grid-row">
+                          <div class="data-grid-cell"><strong>
+                              <%= entrega.id %>
+                            </strong></div>
+                          <div class="data-grid-cell">
+                            <%= entrega.descricao %>
+                          </div>
+                          <div class="data-grid-cell">
+                            <%= entrega.origem %>
+                          </div>
+                          <div class="data-grid-cell">
+                            <%= entrega.destino %>
+                          </div>
+                          <div class="data-grid-cell">
+                            <span class="badge badge-<%= entrega.status.toLowerCase() %>">
+                              <%= entrega.status.replace('_', ' ' ) %>
+                            </span>
+                          </div>
+                          <div class="data-grid-cell">
+                            <%= entrega.createdAt ? new Date(entrega.createdAt).toLocaleDateString('pt-BR') : '-' %>
+                          </div>
+                          <div class="data-grid-cell" style="text-align: right;">
+                            <a href="/painel/entregas/<%= entrega.id %>" class="btn btn-sm btn-outline">Ver Detalhes</a>
+                          </div>
+                        </div>
+                        <% }); %>
+                          <% } else { %>
+                            <div class="data-grid-row"
+                              style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: var(--text-muted);">
+                              Nenhuma entrega encontrada para este motorista
+                            </div>
+                            <% } %>
+                  </div>
+                </div>
+              </section>
+            </div>
   </div>
 
-  <template id="row-template">
-    <div class="data-grid-row">
-      <div class="data-grid-cell"><strong class="cell-id"></strong></div>
-      <div class="data-grid-cell cell-descricao"></div>
-      <div class="data-grid-cell cell-origem"></div>
-      <div class="data-grid-cell cell-destino"></div>
-      <div class="data-grid-cell">
-        <span class="badge cell-status"></span>
-      </div>
-      <div class="data-grid-cell cell-data"></div>
-      <div class="data-grid-cell" style="text-align: right;">
-        <a href="#" class="btn btn-sm btn-outline cell-link">Ver Detalhes</a>
-      </div>
-    </div>
-  </template>
-
   <%- include('../partials/footer') %>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const urlParts = window.location.pathname.split('/').filter(Boolean);
-        const motoristaId = urlParts[urlParts.length - 1];
-
-        const gridBody = document.getElementById('grid-body');
-        const templateRow = document.getElementById('row-template');
-        const filterForm = document.getElementById('filter-form');
-        const statusSelect = document.getElementById('status');
-        const btnLimpar = document.getElementById('btn-limpar');
-
-        const carregarMotorista = async () => {
-          try {
-            const { data: motorista } = await api.get(`/motoristas/${motoristaId}`);
-
-            document.getElementById('titulo-pagina').textContent = `Detalhe do Motorista #${motorista.id}`;
-            document.getElementById('val-id').textContent = motorista.id;
-            document.getElementById('val-nome').textContent = motorista.nome;
-            document.getElementById('val-cpf').textContent = motorista.cpf;
-            document.getElementById('val-placa').textContent = motorista.placaVeiculo;
-
-            const badge = document.getElementById('badge-status');
-            badge.textContent = motorista.status;
-            badge.className = `badge badge-${motorista.status.toLowerCase()}`;
-
-            document.getElementById('loading-state').style.display = 'none';
-            document.getElementById('content-state').style.display = 'block';
-          } catch (error) {
-            document.getElementById('loading-state').innerHTML = '<p class="alert alert-danger">Erro ao carregar motorista.</p>';
-          }
-        };
-
-        const carregarEntregas = async () => {
-          const params = new URLSearchParams(window.location.search);
-          const status = params.get('status') || '';
-          statusSelect.value = status;
-
-          gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px;">Carregando entregas...</div>`;
-
-          try {
-            const { data: entregas } = await api.get(`/motoristas/${motoristaId}/entregas`, { params: { status } });
-
-            gridBody.innerHTML = ''; 
-
-            if (!entregas || entregas.length === 0) {
-              gridBody.innerHTML = `
-          <div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: var(--text-muted);">
-            Nenhuma entrega encontrada para este motorista
-          </div>`;
-              return;
-            }
-
-            entregas.forEach(entrega => {
-              const clone = templateRow.content.cloneNode(true);
-
-              clone.querySelector('.cell-id').textContent = entrega.id;
-              clone.querySelector('.cell-descricao').textContent = entrega.descricao;
-              clone.querySelector('.cell-origem').textContent = entrega.origem;
-              clone.querySelector('.cell-destino').textContent = entrega.destino;
-
-              const badge = clone.querySelector('.cell-status');
-              badge.textContent = entrega.status.replace('_', ' ');
-              badge.classList.add(`badge-${entrega.status.toLowerCase()}`);
-
-              const dataFormatada = entrega.createdAt ? new Date(entrega.createdAt).toLocaleDateString('pt-BR') : '-';
-              clone.querySelector('.cell-data').textContent = dataFormatada;
-
-              clone.querySelector('.cell-link').href = `/painel/entregas/${entrega.id}`;
-
-              gridBody.appendChild(clone);
-            });
-
-          } catch (error) {
-            gridBody.innerHTML = `<div class="data-grid-row" style="grid-column: 1 / -1; justify-content: center; padding: 40px; color: red;">Erro ao carregar o histórico.</div>`;
-          }
-        };
-
-        const navegarPara = (status) => {
-          const url = new URL(window.location);
-          if (status) {
-            url.searchParams.set('status', status);
-          } else {
-            url.searchParams.delete('status');
-          }
-          window.history.pushState({}, '', url);
-          carregarEntregas();
-        };
-
-        filterForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          navegarPara(statusSelect.value);
-        });
-
-        btnLimpar.addEventListener('click', () => {
-          statusSelect.value = '';
-          navegarPara('');
-        });
-
-        window.addEventListener('popstate', carregarEntregas);
-
-        carregarMotorista();
-        carregarEntregas();
-      });
-    </script>

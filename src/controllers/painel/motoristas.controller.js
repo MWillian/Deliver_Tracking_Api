@@ -57,7 +57,8 @@ export class PainelMotoristasController {
         } catch (err) {
             return res.render('motoristas/novo', {
                 motorista: req.body,
-                erros: { mensagem: err.message }
+                erros: { mensagem: err.message },
+                erro: err.message || 'Erro ao criar motorista'
             });
         }
     }
