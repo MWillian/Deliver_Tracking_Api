@@ -1,329 +1,203 @@
+
 # Deliver Tracking API
 
 Esta API foi desenvolvida para a gestão logística de entregas e motoristas, aplicando padrões de arquitetura avançados como **Repository Pattern** e **Inversão de Dependência**.
 
 ## Tecnologias e Arquitetura
 
-- **Node.js + Express:** O framework Express é a base do servidor, responsável tanto pela criação das rotas da API REST quanto por gerenciar as rotas visuais. Ele orquestra os middlewares (arquivos estáticos, tratamento de erros) para o funcionamento completo da aplicação.
-    
-- **Server-Side Rendering (SSR):** Utilizando a engine **EJS**, as visualizações (telas) são pré-processadas no servidor (SSR). O servidor Express obtém os dados através dos *Controllers* e renderiza o HTML final mesclado a esses dados dinamicamente, enviando-os prontos para o cliente.
-    
-- **Banco de dados:** SQLite com Prisma ORM
-    
-- **Arquitetura:** Controller -> Service -> Repository
-    
-- **Design:** Inversão de Dependência (Dependency Injection) via interfaces/contratos.
-    
-    
+* **Node.js + Express:** O framework Express é a base do servidor, responsável tanto pela criação das rotas da API REST quanto por gerenciar as rotas visuais. Ele orquestra os middlewares (autenticação, arquivos estáticos, tratamento de erros) para o funcionamento completo da aplicação.
+* **Server-Side Rendering (SSR):** Utilizando a engine **EJS**, as telas são pré-processadas no servidor. O Express obtém os dados através dos Controllers e renderiza o HTML final com cálculos e lógicas nativas, dispensando requisições extras do lado do cliente.
+* **Banco de dados:** SQLite operado via Prisma ORM.
+* **Arquitetura:** Fluxo em camadas lógicas divididas em `Controller` -> `Service` -> `Repository`.
+* **Design:** Inversão de Dependência (Dependency Injection) via interfaces/contratos.
+* **Testes Automatizados:** Testes End-to-End (E2E) estruturados com **Playwright** utilizando o padrão Page Object Model (POM).
+
+---
+
 ## Como Executar
 
-1. Instale as dependências:
-    
-    ```
-    npm install
-    ```
+1. Instale as dependências rodando `npm install`.
+2. Defina a variável `DATABASE_URL` no arquivo `.env` com o caminho do banco (Exemplo: `DATABASE_URL="file:./prisma/dev.db"`).
+3. Defina a variável `JWT_SECRET` no arquivo `.env` para a assinatura dos tokens (Exemplo: `JWT_SECRET="sua_chave_secreta_super_segura"`).
+4. Execute as migrations do banco de dados com `npx prisma migrate dev`.
+5. Popule o banco com dados e usuários de demonstração executando `node prisma/seed.js`.
+6. Inicie o servidor executando `npm run dev` (ou `npm start`).
 
-2. Configure o banco de dados:
+---
 
-  - Defina a variável `DATABASE_URL` no arquivo .env
-  - Exemplo: `DATABASE_URL="file:./prisma/dev.db"`
-  - Defina a variável `JWT_SECRET` no arquivo .env para a assinatura dos tokens (ex: `JWT_SECRET="sua_chave_secreta"`).
+## Dependências Essenciais
 
-3. Execute as migrations:
+* `express`
+* `ejs`
+* `dotenv`
+* `@prisma/client` / `prisma`
+* `jsonwebtoken`
+* `bcrypt`
+* `cookie-parser`
+* `@playwright/test` (Dev)
 
-  ```
-  npx prisma migrate dev
-  ```
+---
 
-4. (Opcional) Popular dados de demonstração:
+## Autenticação e Autorização (RBAC)
 
-  ```
-  node prisma/seed.js
-  ```
-    
-5. Inicie o servidor:
-    
-    ```
-    npm start
-    ```
+O sistema possui uma camada de segurança robusta baseada em **JWT** e **Controle de Acesso Baseado em Papéis (RBAC)**.
+O sistema trabalha de forma híbrida para autenticação:
 
-## Dependências Necessárias
+* **API REST:** Exige o token no cabeçalho da requisição (`Authorization: Bearer <token>`).
+* **Painel SSR:** Utiliza *Cookies HTTP-Only* gerados automaticamente no momento do login.
 
-- `express`
-- `ejs`
-- `dotenv`
-- `@prisma/client`
-- `prisma`
-- `jsonwebtoken`
-- `bcrypt` ou equivalente (se aplicável ao AuthService)
+### Papéis Disponíveis
 
-## Autenticação via JWT
-
-A API foi atualizada para aumentar a segurança restringindo o acesso através do protocolo de **JSON Web Token (JWT)**.
-Todas as requisições para as rotas da API (`/api/entregas`, `/api/motoristas` e `/api/relatorios`) necessitam de um token JWT válido, que deve ser enviado no cabeçalho (*Header*) da requisição:
-
-`Authorization: Bearer <seu_token_jwt_aqui>`
+* **GESTOR:** Acesso total. Único com permissão para criar/inativar motoristas, cancelar entregas e visualizar os painéis de relatórios.
+* **OPERADOR:** Acesso restrito. Pode visualizar listas e criar entregas, mas não possui privilégios de destruição ou métricas globais.
 
 ### Rotas de Autenticação (Abertas)
 
-#### Registrar Usuário
-- **URL:** `/api/auth/registrar` | **Método:** `POST`
-- **Corpo:** `{"nome": "Nome", "email": "admin@teste.com", "senha": "123", "papel": "ADMIN"}` (Dependendo do schema)
-- **Retorno:** Registra o usuário com a senha hasheada.
+**Registrar Usuário**
 
-#### Login
-- **URL:** `/api/auth/login` | **Método:** `POST`
-- **Corpo:** `{"email": "admin@teste.com", "senha": "123"}`
-- **Retorno (200 OK):**
-    ```json
-    {
-      "message": "Login realizado com sucesso",
-      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-    }
-    ```
+* **URL:** `/api/auth/registrar` | **Método:** `POST`
+* **Corpo:** `{"nome": "Nome", "email": "operador@teste.com", "senha": "123"}`
+* **Retorno:** Registra o usuário com a senha hasheada no banco (Papel padrão: `OPERADOR`).
+
+**Login**
+
+* **URL:** `/api/auth/login` | **Método:** `POST`
+* **Corpo:** `{"email": "gestor@teste.com", "senha": "123"}`
+* **Retorno (200 OK):** Injeta o Cookie de sessão e retorna o JSON com o `accessToken`.
+
+---
 
 ## Interface Web e Painel Administrativo
 
-Através do SSR implementado utilizando o EJS, a aplicação possui um Dashboard acessível pelo navegador. Todas as operações de gestão também podem ser feitas por lá através de uma interface amigável.
+A aplicação possui um Dashboard acessível pelo navegador com renderização do lado do servidor (SSR). Todas as rotas estão protegidas e farão o redirecionamento para `/login` caso o usuário não esteja autenticado.
 
-- **Acesso ao Painel:** Navegue para a rota `/painel` no seu navegador (exemplo: `http://localhost:3000/painel`).
+**Acesso ao Painel:** Navegue para a rota `http://localhost:3000/painel`.
 
 ### Documentação das Rotas do `/painel`
 
-A área visual do painel é dividida em diferentes módulos para gerir facilmente a logística. 
+**Dashboard e Relatórios (Acesso: GESTOR)**
 
-#### Dashboard Inicial e Relatórios
-- **`GET /painel/`**: Retorna a página inicial (dashboard principal).
-- **`GET /painel/relatorios`**: Exibe o Dashboard completo de relatórios e métricas de desempenho.
-- **`GET /painel/relatorios/entregas-por-status`**: Visualização das métricas de entrega distribuídas por status atual.
-- **`GET /painel/relatorios/motoristas-ativos`**: Visualização dos motoristas em operação e quantidade de entregas em aberto.
+* **`GET /painel/`**: Retorna a página inicial (dashboard principal).
+* **`GET /painel/relatorios`**: Exibe o Dashboard completo de relatórios e métricas de desempenho.
+* **`GET /painel/relatorios/entregas-por-status`**: Métricas de entrega distribuídas por status.
+* **`GET /painel/relatorios/motoristas-ativos`**: Motoristas em operação e entregas em aberto.
 
-#### Gestão de Entregas
-- **`GET /painel/entregas`**: Interface para listar todas as entregas (suporta filtros de listagem e visualização de status).
-- **`GET /painel/entregas/novo`**: Formulário web (EJS) para criar a solicitação de uma nova entrega.
-- **`POST /painel/entregas`**: Ação de formulário que insere e persiste uma nova entrega.
-- **`GET /painel/entregas/:id`**: Página de detalhes exclusivos de uma entrega específica contendo todo o histórico de eventos.
-- **`GET /painel/atribuir-motorista`**: Tela em formulário para associar rapidamente um veículo/motorista em atividade à uma entrega `CRIADA`.
-- **`POST /painel/atribuir-motorista`**: Ação que efetiva a atribuição informada no formulário.
-- **`PATCH /painel/entregas/:id/avancar`**: Ação rápida (geralmente executada via botão no painel) que avança o status logístico da entrega.
-- **`PATCH /painel/entregas/:id/cancelar`**: Ação para cancelar a entrega atual desde que viável pela regra de negócios.
+**Gestão de Entregas (Acesso: Autenticados)**
 
-#### Gestão de Motoristas
-- **`GET /painel/motoristas`**: Interface completa de listagem de motoristas (Ativos e Inativos).
-- **`GET /painel/motoristas/novo`**: Formulário web (EJS) de cadastro para adicionar novos motoristas.
-- **`POST /painel/motoristas`**: Ação de formulário que persiste o cadastro.
-- **`GET /painel/motoristas/:id`**: Interface de visualização detalhada de um motorista específico.
-- **`GET /painel/motoristas/:id/inativar`**: Ação via interface que realiza a inativação ("Sotf delete") de um motorista.
+* **`GET /painel/entregas`**: Listagem de todas as entregas com suporte a filtros.
+* **`GET /painel/entregas/novo`**: Formulário de criação de nova entrega (registra o `criadorId` automaticamente).
+* **`POST /painel/entregas`**: Ação que persiste a entrega.
+* **`GET /painel/entregas/:id`**: Detalhes da entrega e histórico de eventos.
+* **`GET /painel/atribuir-motorista`**: Formulário para associar motorista à entrega `CRIADA`.
+* **`POST /painel/atribuir-motorista`**: Efetiva a atribuição.
+* **`PATCH /painel/entregas/:id/avancar`**: Avança o status logístico da entrega.
+* **`PATCH /painel/entregas/:id/cancelar`**: Cancela a entrega (Acesso restrito: **GESTOR**).
 
-##  Documentação da API Rest
+**Gestão de Motoristas (Acesso: GESTOR)**
+
+* **`GET /painel/motoristas`**: Listagem de motoristas (Ativos e Inativos).
+* **`GET /painel/motoristas/novo`**: Formulário de cadastro de motoristas.
+* **`POST /painel/motoristas`**: Persiste o cadastro.
+* **`GET /painel/motoristas/:id`**: Visualização detalhada de um motorista.
+* **`GET /painel/motoristas/:id/inativar`**: Realiza a inativação ("Soft delete") do motorista.
+
+---
+
+## Documentação da API Rest
 
 **Base URL:** `/api`
 
-###  Motoristas 
+### Motoristas
 
-#### Criar Motorista
+**Criar Motorista (Acesso: GESTOR)**
 
-- **URL:** `/motoristas` | **Método:** `POST`
-    
-- **Corpo:** `{"nome": "Willian", "cpf": "111.222.333-44", "placaVeiculo": "OPA-1346"}`
-    
-- **Exemplo de Retorno (201):**
-    
-    ```
-    {
-      "id": 1,
-      "nome": "Willian",
-      "placaVeiculo": "OPA-1346",
-      "cpf": "11122233344",
-      "status": "ATIVO"
-    }
-    ```
-    
-- **Erro (409 Conflict):** `{"erro": "Cpf já cadastrado."}`
-    
+* **URL:** `/motoristas` | **Método:** `POST`
+* **Corpo:** `{"nome": "Willian", "cpf": "111.222.333-44", "placaVeiculo": "OPA-1346"}`
+* **Exemplo de Retorno (201):** `{"id": 1, "nome": "Willian", "placaVeiculo": "OPA-1346", "cpf": "11122233344", "status": "ATIVO"}`
 
-#### Listar Todos os Motoristas
+**Listar Todos os Motoristas**
 
-- **URL:** `/motoristas` | **Método:** `GET`
-- **Query params (opcional):** `status=ATIVO|INATIVO`
-    
-- **Exemplo de Retorno:** `[ { "id": 1, ... }, { "id": 2, ... } ]`
-    
+* **URL:** `/motoristas` | **Método:** `GET`
+* **Query params (opcional):** `status=ATIVO|INATIVO`
 
-#### Buscar Motorista por ID
+**Inativar Motorista (Acesso: GESTOR)**
 
-- **URL:** `/motoristas/:id` | **Método:** `GET`
-    
-- **Exemplo de Retorno:**
-    
-    ```
-    {
-      "id": 1,
-      "nome": "Matheus",
-      "placaVeiculo": "AAA-2223",
-      "cpf": "12549383440",
-      "status": "ATIVO"
-    }
-    ```
-    
+* **URL:** `/motoristas/:id/inativar` | **Método:** `PATCH`
+* **Exemplo de Retorno:** `{"mensagem": "Motorista desativado"}`
 
-#### Inativar Motorista
+**Listar Entregas por Motorista**
 
-- **URL:** `/motoristas/:id/inativar` | **Método:** `PATCH`
-    
-- **Exemplo de Retorno:** `{"mensagem": "Motorista desativado"}`
-    
-
-#### Listar Entregas por Motorista
-
-- **URL:** `/motoristas/:id/entregas` | **Método:** `GET`
-- **Query params (opcional):** `status=CRIADA|EM_TRANSITO|ENTREGUE|CANCELADA`
-    
-- **Exemplo de Retorno (com status=CRIADA):**
-    
-    ```
-    [
-      {
-        "id": 2,
-        "descricao": "Entrega de milho",
-        "status": "CRIADA",
-        "historico": [ ... ]
-      }
-    ]
-    ```
-    
+* **URL:** `/motoristas/:id/entregas` | **Método:** `GET`
+* **Query params (opcional):** `status=CRIADA|EM_TRANSITO|ENTREGUE|CANCELADA`
 
 ### Entregas
 
-#### Criar Entrega
+**Criar Entrega**
 
-- **URL:** `/entregas` | **Método:** `POST`
-    
-- **Exemplo de Retorno:** `{"id": 1, "descricao": "Entrega de milho", "status": "CRIADA", ...}`
-    
+* **URL:** `/entregas` | **Método:** `POST`
+* **Exemplo de Retorno:** `{"id": 1, "descricao": "Entrega", "status": "CRIADA", "criadorId": 1}`
 
-#### Atribuir Motorista
+**Atribuir Motorista**
 
-- **URL:** `/entregas/:id/atribuir` | **Método:** `PATCH`
-    
-- **Corpo:** `{"motoristaId": "2"}`
-    
-- **Sucesso (200):** `{"mensagem": "Entrega atribuida com sucesso ao motorista."}`
-    
-- **Erro (422 - Status Inválido):** `{"erro": "Só é possível atribuir um motorista para uma entrega recém criada."}`
-    
-- **Erro (422 - Motorista Inativo):** `{"erro": "Motorista inativo."}`
-    
+* **URL:** `/entregas/:id/atribuir` | **Método:** `PATCH`
+* **Corpo:** `{"motoristaId": "2"}`
 
-#### Avançar Estado
+**Avançar Estado**
 
-- **URL:** `/entregas/:id/avancar` | **Método:** `PATCH`
-    
-- **Exemplo de Retorno:**
-    
-    ```
-    {
-      "mensagem": "Status avançado com sucesso",
-      "entrega": {
-        "id": 1,
-        "status": "EM_TRANSITO",
-        "historico": [
-          { "data": "30/3/2026", "descricacao": "CRIADA" },
-          { "data": "30/3/2026", "descricacao": "EM_TRANSITO" }
-        ]
-      }
-    }
-    ```
-    
+* **URL:** `/entregas/:id/avancar` | **Método:** `PATCH`
 
-#### Histórico de Eventos
-#### Listar Entregas (com filtros e paginação)
+**Listar Entregas (Filtros e Paginação)**
 
-- **URL:** `/entregas` | **Método:** `GET`
-- **Query params (opcional):**
-  - `status=CRIADA|EM_TRANSITO|ENTREGUE|CANCELADA`
-  - `createdDe=YYYY-MM-DD`
-  - `createdAte=YYYY-MM-DD`
-  - `page` (padrão 1)
-  - `limit` (padrão 10, máximo 50)
+* **URL:** `/entregas` | **Método:** `GET`
+* **Query params (opcional):** `status`, `createdDe`, `createdAte`, `page`, `limit`.
 
-- **Exemplo:** `/entregas?status=EM_TRANSITO&page=2&limit=5`
-
-- **Exemplo de Retorno:**
-
-    ```
-    {
-      "data": [ ... ],
-      "total": 10,
-      "page": 2,
-      "limit": 5,
-      "totalPages": 2
-    }
-    ```
-
-
-- **URL:** `/entregas/:id/historico` | **Método:** `GET`
-    
-- **Exemplo de Retorno:**
-    
-    ```
-    [
-      { "data": "30/3/2026", "descricacao": "CRIADA" }
-    ]
-    ```
-
-### Relatórios
-
-#### Entregas por Status
-
-- **URL:** `/relatorios/entregas-por-status` | **Método:** `GET`
-
-- **Exemplo de Retorno:**
-
-    ```
-    { "CRIADA": 5, "EM_TRANSITO": 3, "ENTREGUE": 12, "CANCELADA": 2 }
-    ```
-
-#### Motoristas Ativos (entregas em aberto)
-
-- **URL:** `/relatorios/motoristas-ativos` | **Método:** `GET`
-
-- **Exemplo de Retorno:**
-
-    ```
-    [
-      { "motoristaId": 1, "nome": "Willian", "entregasEmAberto": 2 }
-    ]
-    ```
-    
+---
 
 ## Regras de Negócio e Validações (Status HTTP)
 
-| Cenário                          | Status HTTP         | Mensagem de Erro / Comportamento                                               |
-| -------------------------------- | ------------------- | ------------------------------------------------------------------------------ |
-| **CPF Duplicado**                | `409 Conflict`      | `"erro": "Cpf já cadastrado."`                                                 |
-| **Atribuição Inválida (Status)** | `422 Unprocessable` | `"erro": "Só é possível atribuir um motorista para uma entrega recém criada."` |
-| **Motorista Inativo**            | `422 Unprocessable` | `"erro": "Motorista inativo."`                                                 |
-| **Histórico**                    | `200 OK`            | Eventos de atribuição e mudança de status são registrados automaticamente.     |
+| Cenário | Status HTTP | Mensagem de Erro / Comportamento |
+| --- | --- | --- |
+| **CPF/Email Duplicado** | `409 Conflict` | `"erro": "Já cadastrado no sistema."` |
+| **Atribuição Inválida** | `422 Unprocessable` | `"erro": "Só é possível atribuir um motorista para entrega recém criada."` |
+| **Motorista Inativo** | `422 Unprocessable` | `"erro": "Motorista inativo."` |
+| **Acesso Restrito (RBAC)** | `403 Forbidden` | `"erro": "Acesso negado"` (Redirecionamento com Flash no painel) |
+| **Token Ausente/Inválido** | `401 Unauthorized` | `"erro": "Token não fornecido / inválido"` |
+
+---
+
+## Como Rodar os Testes (E2E)
+
+O projeto conta com testes automatizados de fluxo (End-to-End) gerenciados pelo **Playwright**, operando em um ambiente de banco de dados isolado via `.env.test`.
+
+Para executar a suíte de testes com a interface gráfica do navegador ativada:
+
+```bash
+npm run test:e2e -- --headed
+
+```
+
+Para executar em modo headless (silencioso, ideal para CI/CD):
+
+```bash
+npm run test:e2e
+
+```
+
+---
 
 ## Diagrama de Dependências
 
 A aplicação segue o princípio da **Inversão de Dependência**, onde os services dependem de abstrações (contratos/interfaces) e não de classes concretas.
 
-```
+```text
 [ Database ]
      ▼
 [ EntregasRepository ] <----- Contrato: IEntregasRepository
 [ MotoristasRepository ] <--- Contrato: IMotoristasRepository
-[ RelatoriosRepository ] <--- RelatoriosRepository
      ▼
 [ EntregasService ] <------- Recebe Repositories via Constructor
 [ MotoristasService ] <----- Recebe Repository via Constructor
-[ RelatoriosService ] <----- Recebe Repository via Constructor
      ▼
-[ Controllers ] <----------- Orquestram os inputs/outputs
+[ Controllers ] <----------- Orquestram inputs e validam permissões (JWT)
+
 ```
-
-### Testes no Postman
-
-Uma coleção completa do Postman com todos os cenários de sucesso e erro (409, 422, 404) está disponível na pasta `/postman` do repositório.
