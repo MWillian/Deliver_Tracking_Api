@@ -39,7 +39,7 @@ describe('Testes Unitários: Middlewares de Erro', () => {
     });
 
     describe('middlewareDeErros', () => {
-        it('deve retornar JSON quando a requisição aceitar application/json (Testado na RF-04)', () => {
+        it('deve retornar JSON quando a requisição aceitar application/json', () => {
             req.headers['accept'] = 'application/json';
             const erro = new AppError('Erro de API', 400);
 
@@ -49,7 +49,7 @@ describe('Testes Unitários: Middlewares de Erro', () => {
             expect(res.json).toHaveBeenCalledWith({ message: 'Erro de API' });
         });
 
-        it('deve renderizar a página EJS de erro quando for um AppError e a requisição for HTML (Browser)', () => {
+        it('deve renderizar a página EJS de erro quando for um AppError e a requisição for HTML', () => {
             req.headers['accept'] = 'text/html';
             const erro = new AppError('Acesso Negado Frontend', 403);
 
